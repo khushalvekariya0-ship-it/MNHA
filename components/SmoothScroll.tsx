@@ -13,6 +13,15 @@ export function scrollToTop() {
   else window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
 }
 
+// freezes the page behind an open overlay (menus, dialogs)
+export function lockScroll(locked: boolean) {
+  if (activeLenis) {
+    if (locked) activeLenis.stop();
+    else activeLenis.start();
+  }
+  document.documentElement.style.overflow = locked ? "hidden" : "";
+}
+
 export default function SmoothScroll() {
   const pathname = usePathname();
   const lenisRef = useRef<Lenis | null>(null);
