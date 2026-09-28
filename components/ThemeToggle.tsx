@@ -1,24 +1,6 @@
 "use client";
 
-import { applyTheme, useTheme, type Theme } from "./theme";
-
-const options: { value: Theme; label: string; icon: React.ReactNode }[] = [
-  {
-    value: "dark",
-    label: "Dark",
-    icon: <path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" />,
-  },
-  {
-    value: "light",
-    label: "Light",
-    icon: (
-      <>
-        <circle cx="12" cy="12" r="4" />
-        <path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4l1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-      </>
-    ),
-  },
-];
+import { applyTheme, useTheme } from "./theme";
 
 type ViewTransitionDocument = Document & {
   startViewTransition?: (update: () => void) => { ready: Promise<void> };
@@ -32,16 +14,17 @@ export default function ThemeToggle({
   style?: React.CSSProperties;
 }) {
   const theme = useTheme();
+  const light = theme === "light";
 
-  const choose = (next: Theme, button: HTMLButtonElement) => {
-    if (next === theme) return;
+  const toggle = (button: HTMLButtonElement) => {
+    const next = light ? "dark" : "light";
     const doc = document as ViewTransitionDocument;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!doc.startViewTransition || reduced) {
       applyTheme(next);
       return;
     }
-    // the new theme grows out of the button that was pressed
+    // the new theme grows out of the button
     const r = button.getBoundingClientRect();
     const x = r.left + r.width / 2;
     const y = r.top + r.height / 2;
@@ -55,50 +38,48 @@ export default function ThemeToggle({
     });
   };
 
+  const icon = "absolute transition-all duration-500 ease-out";
+
   return (
-    <div
-      role="radiogroup"
-      aria-label="Colour theme"
+    <button
+      type="button"
+      onClick={(e) => toggle(e.currentTarget)}
+      aria-label={light ? "Switch to dark theme" : "Switch to light theme"}
+      title={light ? "Dark mode" : "Light mode"}
       style={style}
-      className={`relative flex rounded-full border border-line-strong bg-ink/[0.04] p-1 ${className}`}
+      className={`relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-ink/[0.07] text-ink ring-1 ring-ink/10 transition-[background-color,box-shadow,scale] duration-300 hover:bg-ink/[0.12] hover:shadow-[0_0_18px_-4px_rgba(0,208,156,0.6)] active:scale-90 ${className}`}
     >
-      <span
-        className={`pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-primary shadow-[0_4px_14px_-4px_rgba(0,208,156,0.7)] transition-transform duration-300 ease-out ${
-          theme === "light" ? "translate-x-full" : ""
-        }`}
+      {/* sun: shown in light mode */}
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         aria-hidden="true"
-      />
-      {options.map((option) => {
-        const active = theme === option.value;
-        return (
-          <button
-            key={option.value}
-            type="button"
-            role="radio"
-            aria-checked={active}
-            aria-label={option.label}
-            onClick={(e) => choose(option.value, e.currentTarget)}
-            className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold transition-colors duration-300 sm:px-3 ${
-              active ? "text-[#03140e]" : "text-body hover:text-ink"
-            }`}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              {option.icon}
-            </svg>
-            <span className="hidden sm:inline">{option.label}</span>
-          </button>
-        );
-      })}
-    </div>
+        className={`${icon} ${light ? "rotate-0 scale-100 opacity-100" : "rotate-90 scale-50 opacity-0"}`}
+      >
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4" />
+      </svg>
+      {/* moon: shown in dark mode */}
+      <svg
+        width="19"
+        height="19"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className={`${icon} ${light ? "-rotate-90 scale-50 opacity-0" : "rotate-0 scale-100 opacity-100"}`}
+      >
+        <path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" />
+      </svg>
+    </button>
   );
 }
