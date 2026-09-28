@@ -8,6 +8,7 @@ import ScrollProgress from "@/components/ScrollProgress";
 import Preloader from "@/components/Preloader";
 import CursorFx from "@/components/CursorFx";
 import SmoothScroll from "@/components/SmoothScroll";
+import { themeScript } from "@/components/theme-script";
 import "./globals.css";
 
 const inter = Inter({
@@ -28,7 +29,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    // the theme script sets data-theme on <html> before React hydrates
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="flex min-h-screen flex-col">
         {/* safety net: reveal load-gated content even if hydration stalls */}
         <script

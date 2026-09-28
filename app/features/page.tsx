@@ -195,7 +195,7 @@ export default function FeaturesPage() {
               <SplitWords
                 text="invest smarter."
                 accent={["invest", "smarter"]}
-                accentClassName="text-[#2ee6b5]"
+                accentClassName="text-[#2ee6b5] light:text-primary"
                 trigger="load"
                 baseDelay={320}
               />
@@ -310,7 +310,7 @@ export default function FeaturesPage() {
                   <span
                     key={range}
                     className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                      range === "1Y" ? "bg-white/[0.08] text-ink" : "text-muted"
+                      range === "1Y" ? "bg-ink/[0.08] text-ink" : "text-muted"
                     }`}
                   >
                     {range}
@@ -362,11 +362,11 @@ export default function FeaturesPage() {
                     x2={CW - CP.r}
                     y1={CP.t + cPlotH * f}
                     y2={CP.t + cPlotH * f}
-                    stroke="#1c2531"
+                    stroke="var(--color-line)"
                     strokeDasharray="3 5"
                   />
                 ))}
-                <line x1={CP.l} x2={CW - CP.r} y1={pfBase} y2={pfBase} stroke="#1c2531" />
+                <line x1={CP.l} x2={CW - CP.r} y1={pfBase} y2={pfBase} stroke="var(--color-line)" />
                 {pfMonths.map((month, i) => (
                   <text
                     key={month}
@@ -374,7 +374,7 @@ export default function FeaturesPage() {
                     y={CH - 5}
                     textAnchor={i === 0 ? "start" : "middle"}
                     fontSize="10"
-                    fill="#5f6b7c"
+                    fill="var(--color-muted)"
                   >
                     {month}
                   </text>
@@ -389,12 +389,12 @@ export default function FeaturesPage() {
                   strokeLinecap="round"
                 />
                 <g className="fade-late">
-                  <line x1={pfEnd.x} x2={pfEnd.x} y1={pfEnd.y} y2={pfBase} stroke="#2b3546" strokeDasharray="3 4" />
+                  <line x1={pfEnd.x} x2={pfEnd.x} y1={pfEnd.y} y2={pfBase} stroke="var(--color-line-strong)" strokeDasharray="3 4" />
                   <circle className="ping" cx={pfEnd.x} cy={pfEnd.y} r="6" fill="none" stroke="#4df3c9" strokeWidth="1.5" />
                   <circle cx={pfEnd.x} cy={pfEnd.y} r="4" fill="#d7fff3" stroke="#00d09c" strokeWidth="2" />
                   <g transform={`translate(${(pfEnd.x - 80).toFixed(1)} ${(pfEnd.y - 30).toFixed(1)})`}>
-                    <rect width="66" height="24" rx="8" fill="#111822" stroke="#2b3546" />
-                    <text x="33" y="16" textAnchor="middle" fontSize="11" fontWeight="700" fill="#f4f6fa">
+                    <rect width="66" height="24" rx="8" fill="var(--color-raised)" stroke="var(--color-line-strong)" />
+                    <text x="33" y="16" textAnchor="middle" fontSize="11" fontWeight="700" fill="var(--color-ink)">
                       ₹23.2L
                     </text>
                   </g>
@@ -434,7 +434,7 @@ export default function FeaturesPage() {
                 aria-label="Portfolio allocation: stocks 45%, mutual funds 30%, gold 15%, FDs 10%"
                 className="donut-in mx-auto shrink-0"
               >
-                <circle cx="80" cy="80" r={DR} fill="none" stroke="#1c2531" strokeWidth="10" />
+                <circle cx="80" cy="80" r={DR} fill="none" stroke="var(--color-line)" strokeWidth="10" />
                 <g transform="rotate(-90 80 80)">
                   {allocation.map((seg) => {
                     const dash = (seg.pct / 100) * DC - DGAP;
@@ -455,10 +455,10 @@ export default function FeaturesPage() {
                     );
                   })}
                 </g>
-                <text x="80" y="80" textAnchor="middle" fontSize="19" fontWeight="700" fill="#f4f6fa">
+                <text x="80" y="80" textAnchor="middle" fontSize="19" fontWeight="700" fill="var(--color-ink)">
                   ₹22.4L
                 </text>
-                <text x="80" y="97" textAnchor="middle" fontSize="10" fontWeight="500" fill="#5f6b7c">
+                <text x="80" y="97" textAnchor="middle" fontSize="10" fontWeight="500" fill="var(--color-muted)">
                   Total value
                 </text>
               </svg>
@@ -545,7 +545,7 @@ export default function FeaturesPage() {
                 <p className="mt-1 text-sm">Bluechip Growth Fund · 5 Oct</p>
               </div>
               <svg width="72" height="72" viewBox="0 0 72 72" role="img" aria-label="4 days to go" className="shrink-0">
-                <circle cx="36" cy="36" r="30" fill="none" stroke="#1c2531" strokeWidth="4" />
+                <circle cx="36" cy="36" r="30" fill="none" stroke="var(--color-line)" strokeWidth="4" />
                 <circle
                   cx="36"
                   cy="36"
@@ -558,10 +558,10 @@ export default function FeaturesPage() {
                   transform="rotate(-90 36 36)"
                   className="draw-line"
                 />
-                <text x="36" y="36" textAnchor="middle" fontSize="16" fontWeight="700" fill="#f4f6fa">
+                <text x="36" y="36" textAnchor="middle" fontSize="16" fontWeight="700" fill="var(--color-ink)">
                   4
                 </text>
-                <text x="36" y="49" textAnchor="middle" fontSize="8" fontWeight="500" fill="#5f6b7c">
+                <text x="36" y="49" textAnchor="middle" fontSize="8" fontWeight="500" fill="var(--color-muted)">
                   days
                 </text>
               </svg>

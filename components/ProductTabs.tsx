@@ -126,7 +126,7 @@ export default function ProductTabs() {
                 <span
                   className="size-2.5 rounded-full transition-all duration-300"
                   style={{
-                    backgroundColor: i === active ? product.accent : "#2b3546",
+                    backgroundColor: i === active ? product.accent : "var(--color-line-strong)",
                     boxShadow:
                       i === active ? `0 0 8px ${product.accent}` : undefined,
                   }}
@@ -232,7 +232,7 @@ export default function ProductTabs() {
                   cy={CH - (current.points[current.points.length - 1] / 75) * CH}
                   r="4.5"
                   fill={current.accent}
-                  stroke="#05070b"
+                  stroke="var(--color-canvas)"
                   strokeWidth="2"
                 />
               </svg>
@@ -241,7 +241,7 @@ export default function ProductTabs() {
                 {current.rows.map((row) => (
                   <div
                     key={row.label}
-                    className="flex items-center justify-between rounded-xl bg-raised px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/[0.06]"
+                    className="flex items-center justify-between rounded-xl bg-raised px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:bg-ink/[0.06]"
                   >
                     <span className="text-sm font-semibold text-ink">
                       {row.label}

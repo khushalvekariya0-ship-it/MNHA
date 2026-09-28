@@ -78,7 +78,7 @@ export default function SignupForm() {
 
   return (
     <form
-      className={`card rounded-3xl p-8 shadow-[0_40px_100px_-40px_rgba(0,0,0,0.9)] sm:p-10 ${
+      className={`card rounded-3xl p-8 shadow-[0_40px_100px_-40px_var(--shadow-deep)] sm:p-10 ${
         shake ? "animate-shake" : ""
       }`}
       onSubmit={(e) => {

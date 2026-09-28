@@ -16,7 +16,7 @@ export default function DashboardMockup() {
   let acc = 0;
   return (
     <div className="relative w-full max-w-xl">
-      <div className="glass rounded-3xl p-5 shadow-[0_40px_90px_-30px_rgba(0,0,0,0.9)]">
+      <div className="glass rounded-3xl p-5 shadow-[0_40px_90px_-30px_var(--shadow-deep)]">
         {/* window bar */}
         <div className="flex items-center gap-2">
           <span className="size-2.5 rounded-full bg-rose-500/80" />
@@ -58,7 +58,7 @@ export default function DashboardMockup() {
                 </linearGradient>
               </defs>
               {[40, 80, 120].map((y) => (
-                <line key={y} x1="0" x2="360" y1={y} y2={y} stroke="#1c2531" strokeWidth="1" />
+                <line key={y} x1="0" x2="360" y1={y} y2={y} stroke="var(--color-line)" strokeWidth="1" />
               ))}
               <path d={`${line} L360 160 L0 160 Z`} fill="url(#dash-fill)" />
               <path
@@ -93,7 +93,7 @@ export default function DashboardMockup() {
         data-mouse-parallax="-16"
         className="absolute -bottom-10 -right-4 hidden sm:block"
       >
-        <div className="glass w-56 rounded-2xl p-4 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.9)]">
+        <div className="glass w-56 rounded-2xl p-4 shadow-[0_30px_60px_-20px_var(--shadow-deep)]">
           <p className="text-[11px] font-semibold text-ink">Portfolio Allocation</p>
           <div className="mt-3 flex items-center gap-3">
             <svg width="76" height="76" viewBox="0 0 80 80" className="donut-in shrink-0" aria-hidden="true">

@@ -12,9 +12,9 @@ function StocksArt() {
           <stop offset="100%" stopColor="#00d09c" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <rect x="150" y="8" width="56" height="8" rx="4" fill="#1c2531" />
-      <rect x="150" y="22" width="40" height="8" rx="4" fill="#0f3a30" />
-      <text x="196" y="29" fontSize="9" fill="#5f6b7c">
+      <rect x="150" y="8" width="56" height="8" rx="4" fill="var(--color-line)" />
+      <rect x="150" y="22" width="40" height="8" rx="4" fill="rgba(0,208,156,0.18)" />
+      <text x="196" y="29" fontSize="9" fill="var(--color-muted)">
         1D
       </text>
       <path
@@ -31,7 +31,7 @@ function StocksArt() {
         className="draw-line"
       />
       <circle cx="214" cy="22" r="5" fill="#d7fff3" stroke="#00d09c" strokeWidth="2.5" />
-      <rect x="222" y="12" width="30" height="18" rx="9" fill="#111822" stroke="#2b3546" />
+      <rect x="222" y="12" width="30" height="18" rx="9" fill="var(--color-raised)" stroke="var(--color-line-strong)" />
       <text x="237" y="25" fontSize="12" textAnchor="middle" fill="#4df3c9" fontWeight="700">
         +
       </text>
@@ -43,15 +43,15 @@ function EtfsArt() {
   return (
     <svg viewBox="0 0 200 140" className="h-auto w-full max-w-[190px]" aria-hidden="true">
       {[30, 60, 90, 120].map((y) => (
-        <line key={y} x1="12" x2="188" y1={y} y2={y} stroke="#1c2531" strokeWidth="1" />
+        <line key={y} x1="12" x2="188" y1={y} y2={y} stroke="var(--color-line)" strokeWidth="1" />
       ))}
       {[40, 80, 120, 160].map((x) => (
-        <line key={x} x1={x} x2={x} y1="18" y2="126" stroke="#1c2531" strokeWidth="1" />
+        <line key={x} x1={x} x2={x} y1="18" y2="126" stroke="var(--color-line)" strokeWidth="1" />
       ))}
       <path
         d="M16 112 L55 88 L85 102 L125 72 L168 88"
         fill="none"
-        stroke="#5f6b7c"
+        stroke="var(--color-muted)"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -89,7 +89,7 @@ function BondsArt() {
       />
       <path d="M96 14 a16 16 0 0116 16 h-16z" fill="none" stroke="rgba(251,113,133,0.45)" strokeWidth="1.5" />
       <path d="M112 14 a16 16 0 00-16 16 h16z" fill="rgba(244,63,94,0.12)" stroke="rgba(251,113,133,0.45)" strokeWidth="1.5" />
-      <circle cx="100" cy="102" r="22" fill="#111822" stroke="#fb7185" strokeWidth="1.5" />
+      <circle cx="100" cy="102" r="22" fill="var(--color-raised)" stroke="#fb7185" strokeWidth="1.5" />
       <path
         d="M92 92h16M92 98h16M93.5 92c9 0 9 10 0 10l11 10"
         fill="none"
@@ -118,7 +118,7 @@ function IposArt() {
   return (
     <svg viewBox="0 0 240 140" className="h-auto w-full max-w-[230px]" aria-hidden="true">
       {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-        <rect key={i} x={24 + i * 29} y="12" width="17" height="5" rx="2.5" fill="#1c2531" />
+        <rect key={i} x={24 + i * 29} y="12" width="17" height="5" rx="2.5" fill="var(--color-line)" />
       ))}
       {Array.from({ length: 4 }).map((_, r) =>
         Array.from({ length: 6 }).map((_, c) => {
@@ -132,8 +132,8 @@ function IposArt() {
               width="22"
               height="20"
               rx="6"
-              fill={t ? t.fill : "#0b1017"}
-              stroke={t ? t.stroke : "#1c2531"}
+              fill={t ? t.fill : "var(--color-surface)"}
+              stroke={t ? t.stroke : "var(--color-line)"}
               strokeWidth="1.3"
             />
           );

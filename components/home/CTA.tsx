@@ -45,7 +45,7 @@ export default function CTA({
             </div>
           )}
           <div
-            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_38%_42%_at_50%_50%,rgba(5,7,11,0.85),rgba(5,7,11,0))]"
+            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_38%_42%_at_50%_50%,rgb(var(--scrim)/0.85),rgb(var(--scrim)/0))]"
             aria-hidden="true"
           />
         </>
@@ -57,10 +57,10 @@ export default function CTA({
       >
         {waves ? (
           <>
-            <p className="text-sm font-bold uppercase tracking-[0.32em] text-[#2ee6d6]">
+            <p className="text-sm font-bold uppercase tracking-[0.32em] text-[#2ee6d6] light:text-[#0e9384]">
               Get started
             </p>
-            <span className="mx-auto mt-3 block h-0.5 w-10 rounded-full bg-[#2ee6d6]/70" aria-hidden="true" />
+            <span className="mx-auto mt-3 block h-0.5 w-10 rounded-full bg-[#2ee6d6]/70 light:bg-[#0e9384]/60" aria-hidden="true" />
           </>
         ) : (
           <p className="eyebrow">Get started</p>
@@ -72,8 +72,8 @@ export default function CTA({
             accentClassNames={
               waves
                 ? [
-                    "bg-gradient-to-r from-[#34f0c8] to-[#19d9ff] bg-clip-text text-transparent",
-                    "bg-gradient-to-r from-[#19c8ff] to-[#1a7dff] bg-clip-text text-transparent",
+                    "bg-gradient-to-r from-[#34f0c8] to-[#19d9ff] bg-clip-text text-transparent light:from-[#00a37a] light:to-[#0891b2]",
+                    "bg-gradient-to-r from-[#19c8ff] to-[#1a7dff] bg-clip-text text-transparent light:from-[#0891b2] light:to-[#1d4ed8]",
                   ]
                 : undefined
             }

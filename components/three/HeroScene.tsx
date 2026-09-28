@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import {
   AdditiveBlending,
+  NormalBlending,
   BufferAttribute,
   BufferGeometry,
   CanvasTexture,
@@ -100,27 +101,56 @@ const starVertex = /* glsl */ `
 `;
 
 const starFragment = /* glsl */ `
+  uniform vec3 uStarColor;
   varying float vTwinkle;
 
   void main() {
     float d = length(gl_PointCoord - 0.5);
     if (d > 0.5) discard;
     float glow = pow(1.0 - smoothstep(0.0, 0.5, d), 2.0);
-    gl_FragColor = vec4(vec3(0.72, 1.0, 0.92), glow * vTwinkle * 0.8);
+    gl_FragColor = vec4(uStarColor, glow * vTwinkle * 0.8);
     #include <colorspace_fragment>
   }
 `;
 
-function makeGlowTexture() {
+// glow on dark adds light; on the light theme the same glow is a soft tint
+const PALETTES = {
+  dark: {
+    blending: AdditiveBlending,
+    terrainLow: "#00805f",
+    terrainHigh: "#5cffd2",
+    star: "#b8ffeb",
+    aura: "#00d09c",
+    auraOpacity: 0.18,
+    lineStart: "#00a37a",
+    lineEnd: "#b8ffe9",
+    tip: "#d7fff3",
+    glow: ["rgba(120, 255, 214, 0.9)", "rgba(0, 208, 156, 0.35)", "rgba(0, 208, 156, 0)"],
+  },
+  light: {
+    blending: NormalBlending,
+    terrainLow: "#8fe3cc",
+    terrainHigh: "#00936d",
+    star: "#00996f",
+    aura: "#00b386",
+    auraOpacity: 0.16,
+    lineStart: "#00c896",
+    lineEnd: "#006e52",
+    tip: "#00805f",
+    glow: ["rgba(0, 179, 134, 0.55)", "rgba(0, 179, 134, 0.18)", "rgba(0, 179, 134, 0)"],
+  },
+};
+
+function makeGlowTexture(stops: string[]) {
   const canvas = document.createElement("canvas");
   canvas.width = 128;
   canvas.height = 128;
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
   const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-  g.addColorStop(0, "rgba(120, 255, 214, 0.9)");
-  g.addColorStop(0.35, "rgba(0, 208, 156, 0.35)");
-  g.addColorStop(1, "rgba(0, 208, 156, 0)");
+  g.addColorStop(0, stops[0]);
+  g.addColorStop(0.35, stops[1]);
+  g.addColorStop(1, stops[2]);
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 128, 128);
   const texture = new CanvasTexture(canvas);
@@ -183,12 +213,13 @@ function unionBox(els: HTMLElement[], root: HTMLElement) {
   };
 }
 
-export default function HeroScene() {
+export default function HeroScene({ light = false }: { light?: boolean }) {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
+    const palette = light ? PALETTES.light : PALETTES.dark;
 
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -239,8 +270,8 @@ export default function HeroScene() {
       uScroll: { value: 0 },
       uSize: { value: small ? 44 : 54 },
       uPixelRatio: { value: renderer.getPixelRatio() },
-      uColorDeep: { value: new Color("#00805f") },
-      uColorBright: { value: new Color("#5cffd2") },
+      uColorDeep: { value: new Color(palette.terrainLow) },
+      uColorBright: { value: new Color(palette.terrainHigh) },
     };
     const terrainMat = new ShaderMaterial({
       uniforms,
@@ -248,7 +279,7 @@ export default function HeroScene() {
       fragmentShader: terrainFragment,
       transparent: true,
       depthWrite: false,
-      blending: AdditiveBlending,
+      blending: palette.blending,
     });
     scene.add(new Points(terrainGeo, terrainMat));
 
@@ -266,12 +297,16 @@ export default function HeroScene() {
     starGeo.setAttribute("position", new BufferAttribute(starPositions, 3));
     starGeo.setAttribute("aRandom", new BufferAttribute(starRandoms, 1));
     const starMat = new ShaderMaterial({
-      uniforms: { uTime: uniforms.uTime, uPixelRatio: uniforms.uPixelRatio },
+      uniforms: {
+        uTime: uniforms.uTime,
+        uPixelRatio: uniforms.uPixelRatio,
+        uStarColor: { value: new Color(palette.star) },
+      },
       vertexShader: starVertex,
       fragmentShader: starFragment,
       transparent: true,
       depthWrite: false,
-      blending: AdditiveBlending,
+      blending: palette.blending,
     });
     scene.add(new Points(starGeo, starMat));
 
@@ -280,10 +315,10 @@ export default function HeroScene() {
     const RADIAL = 8;
     const coreMat = new MeshBasicMaterial({ vertexColors: true });
     const auraMat = new MeshBasicMaterial({
-      color: "#00d09c",
+      color: palette.aura,
       transparent: true,
-      opacity: 0.18,
-      blending: AdditiveBlending,
+      opacity: palette.auraOpacity,
+      blending: palette.blending,
       depthWrite: false,
     });
     const core = new Mesh(new BufferGeometry(), coreMat);
@@ -291,8 +326,8 @@ export default function HeroScene() {
     scene.add(aura, core);
     let curve: CatmullRomCurve3 | null = null;
     let tipScale = 1;
-    const deep = new Color("#00a37a");
-    const bright = new Color("#b8ffe9");
+    const deep = new Color(palette.lineStart);
+    const bright = new Color(palette.lineEnd);
     const tmp = new Color();
     const anchorRay = new Raycaster();
     const linePlane = new Plane(new Vector3(0, 1, 0), -2);
@@ -324,17 +359,17 @@ export default function HeroScene() {
     };
 
     const tipGeo = new SphereGeometry(0.15, 20, 20);
-    const tipMat = new MeshBasicMaterial({ color: "#d7fff3" });
+    const tipMat = new MeshBasicMaterial({ color: palette.tip });
     const tip = new Mesh(tipGeo, tipMat);
     scene.add(tip);
 
-    const glowTexture = makeGlowTexture();
+    const glowTexture = makeGlowTexture(palette.glow);
     const haloMat = glowTexture
       ? new SpriteMaterial({
           map: glowTexture,
           transparent: true,
           depthWrite: false,
-          blending: AdditiveBlending,
+          blending: palette.blending,
         })
       : null;
     const halo = haloMat ? new Sprite(haloMat) : null;
@@ -579,7 +614,7 @@ export default function HeroScene() {
       document.removeEventListener("visibilitychange", onVisibility);
       dispose();
     };
-  }, []);
+  }, [light]);
 
   return <div ref={mountRef} className="absolute inset-0" aria-hidden="true" />;
 }

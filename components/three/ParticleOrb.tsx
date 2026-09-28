@@ -11,6 +11,7 @@ import {
   Line,
   LineBasicMaterial,
   LineLoop,
+  NormalBlending,
   Mesh,
   MeshBasicMaterial,
   PerspectiveCamera,
@@ -29,6 +30,34 @@ import {
 } from "three";
 
 export type OrbVariant = "globe" | "ring";
+
+// glow on dark adds light; on the light theme the same parts are solid tints
+const PALETTES = {
+  dark: {
+    blending: AdditiveBlending,
+    front: "#00d09c",
+    hot: "#c4fff0",
+    back: "#0b4a3b",
+    line: "#00d09c",
+    comet: "#9dffe3",
+    satellite: "#c4fff0",
+    pin: "#ffffff",
+    beam: "#c4fff0",
+    pulse: "#4df3c9",
+  },
+  light: {
+    blending: NormalBlending,
+    front: "#00a37a",
+    hot: "#006e52",
+    back: "#a8e6d6",
+    line: "#00b386",
+    comet: "#00805f",
+    satellite: "#00805f",
+    pin: "#0b1220",
+    beam: "#00805f",
+    pulse: "#00b386",
+  },
+};
 
 const vertexShader = /* glsl */ `
   uniform float uTime;
@@ -96,9 +125,11 @@ function rng(seed: number) {
 export default function ParticleOrb({
   variant = "globe",
   pin,
+  light = false,
 }: {
   variant?: OrbVariant;
   pin?: { lat: number; lon: number };
+  light?: boolean;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const pinLat = pin?.lat;
@@ -107,6 +138,7 @@ export default function ParticleOrb({
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
+    const palette = light ? PALETTES.light : PALETTES.dark;
 
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -186,9 +218,9 @@ export default function ParticleOrb({
       uSize: { value: small ? 42 : 50 },
       uPixelRatio: { value: renderer.getPixelRatio() },
       uIntro: { value: reduced ? 1 : 0 },
-      uColorFront: { value: new Color("#00d09c") },
-      uColorHot: { value: new Color("#c4fff0") },
-      uColorBack: { value: new Color("#0b4a3b") },
+      uColorFront: { value: new Color(palette.front) },
+      uColorHot: { value: new Color(palette.hot) },
+      uColorBack: { value: new Color(palette.back) },
     };
     const bodyMat = new ShaderMaterial({
       uniforms,
@@ -196,7 +228,7 @@ export default function ParticleOrb({
       fragmentShader,
       transparent: true,
       depthWrite: false,
-      blending: AdditiveBlending,
+      blending: palette.blending,
     });
     const body = new Points(bodyGeo, bodyMat);
     group.add(body);
@@ -207,7 +239,7 @@ export default function ParticleOrb({
         color,
         transparent: true,
         opacity,
-        blending: AdditiveBlending,
+        blending: palette.blending,
         depthWrite: false,
       });
       disposables.push(m);
@@ -217,7 +249,7 @@ export default function ParticleOrb({
       const g = new BufferGeometry();
       g.setAttribute("position", new BufferAttribute(circlePoints(radius, 160), 3));
       disposables.push(g);
-      return new LineLoop(g, lineMat("#00d09c", opacity));
+      return new LineLoop(g, lineMat(palette.line, opacity));
     };
 
     // ---- globe extras: latitude rings + data arcs
@@ -253,8 +285,8 @@ export default function ParticleOrb({
         const base = new BufferGeometry().setFromPoints(pts);
         const comet = new BufferGeometry().setFromPoints(pts);
         disposables.push(base, comet);
-        group.add(new Line(base, lineMat("#00d09c", 0.1)));
-        group.add(new Line(comet, lineMat("#9dffe3", 0.95)));
+        group.add(new Line(base, lineMat(palette.line, 0.1)));
+        group.add(new Line(comet, lineMat(palette.comet, 0.95)));
         arcs.push({ geo: comet, offset: rand() * 1.6, speed: 0.22 + rand() * 0.2 });
       }
     }
@@ -275,7 +307,7 @@ export default function ParticleOrb({
     const orbitRadius = variant === "ring" ? 4.1 : R * 1.45;
     orbit.add(loop(orbitRadius, 0.16));
     const satGeo = new SphereGeometry(0.06, 12, 12);
-    const satMat = new MeshBasicMaterial({ color: "#c4fff0" });
+    const satMat = new MeshBasicMaterial({ color: palette.satellite });
     disposables.push(satGeo, satMat);
     const satellites = [0, Math.PI * 0.66, Math.PI * 1.33].map(() => {
       const s = new Mesh(satGeo, satMat);
@@ -295,7 +327,7 @@ export default function ParticleOrb({
       ).multiplyScalar(R * 1.01);
 
       const dotGeo = new SphereGeometry(0.08, 16, 16);
-      const dotMat = new MeshBasicMaterial({ color: "#ffffff" });
+      const dotMat = new MeshBasicMaterial({ color: palette.pin });
       disposables.push(dotGeo, dotMat);
       const dot = new Mesh(dotGeo, dotMat);
       dot.position.copy(p);
@@ -303,16 +335,16 @@ export default function ParticleOrb({
 
       const beam = new BufferGeometry().setFromPoints([p, p.clone().multiplyScalar(1.28)]);
       disposables.push(beam);
-      group.add(new Line(beam, lineMat("#c4fff0", 0.9)));
+      group.add(new Line(beam, lineMat(palette.beam, 0.9)));
 
       const ringGeo = new RingGeometry(0.09, 0.115, 40);
       disposables.push(ringGeo);
       for (let k = 0; k < 2; k++) {
         const m = new MeshBasicMaterial({
-          color: "#4df3c9",
+          color: palette.pulse,
           transparent: true,
           side: DoubleSide,
-          blending: AdditiveBlending,
+          blending: palette.blending,
           depthWrite: false,
         });
         disposables.push(m);
@@ -491,7 +523,7 @@ export default function ParticleOrb({
       document.removeEventListener("visibilitychange", onVisibility);
       dispose();
     };
-  }, [variant, pinLat, pinLon]);
+  }, [variant, pinLat, pinLon, light]);
 
   return <div ref={mountRef} className="absolute inset-0" aria-hidden="true" />;
 }

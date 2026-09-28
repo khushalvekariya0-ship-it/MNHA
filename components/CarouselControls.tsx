@@ -75,7 +75,7 @@ function Arrow({ dir, onClick }: { dir: "prev" | "next"; onClick: () => void }) 
       type="button"
       onClick={onClick}
       aria-label={dir === "prev" ? "Previous screen" : "Next screen"}
-      className="flex size-10 items-center justify-center rounded-full border border-line-strong bg-white/[0.03] text-ink transition-all duration-300 hover:border-primary hover:text-primary hover:shadow-[0_0_20px_-4px_rgba(0,208,156,0.7)] active:scale-90"
+      className="flex size-10 items-center justify-center rounded-full border border-line-strong bg-ink/[0.03] text-ink transition-all duration-300 hover:border-primary hover:text-primary hover:shadow-[0_0_20px_-4px_rgba(0,208,156,0.7)] active:scale-90"
     >
       <svg
         width="16"
@@ -131,7 +131,7 @@ export default function CarouselControls({
               aria-label={labels?.[i] ?? `Screen ${i + 1}`}
               aria-current={active ? "true" : undefined}
               className={`relative h-1.5 overflow-hidden rounded-full transition-all duration-300 ${
-                active ? "w-9 bg-white/15" : "w-1.5 bg-line-strong hover:bg-muted"
+                active ? "w-9 bg-ink/15" : "w-1.5 bg-line-strong hover:bg-muted"
               }`}
             >
               {active && (

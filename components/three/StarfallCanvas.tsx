@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import {
   AdditiveBlending,
+  Color,
+  NormalBlending,
   BufferAttribute,
   BufferGeometry,
   CanvasTexture,
@@ -46,12 +48,13 @@ const skyVertex = /* glsl */ `
 `;
 
 const skyFragment = /* glsl */ `
+  uniform vec3 uColor;
   varying float vAlpha;
 
   void main() {
     float d = length(gl_PointCoord - 0.5);
     if (d > 0.5) discard;
-    gl_FragColor = vec4(0.82, 1.0, 0.95, vAlpha * (1.0 - smoothstep(0.35, 0.5, d)));
+    gl_FragColor = vec4(uColor, vAlpha * (1.0 - smoothstep(0.35, 0.5, d)));
     #include <colorspace_fragment>
   }
 `;
@@ -67,27 +70,51 @@ const trailVertex = /* glsl */ `
 
 const trailFragment = /* glsl */ `
   uniform float uOpacity;
+  uniform vec3 uTail;
+  uniform vec3 uHead;
   varying vec2 vUv;
   void main() {
     float along = pow(vUv.x, 2.4);
     float across = 1.0 - abs(vUv.y - 0.5) * 2.0;
-    vec3 color = mix(vec3(0.0, 0.82, 0.61), vec3(0.9, 1.0, 0.97), smoothstep(0.6, 1.0, vUv.x));
+    vec3 color = mix(uTail, uHead, smoothstep(0.6, 1.0, vUv.x));
     gl_FragColor = vec4(color, along * across * uOpacity);
     #include <colorspace_fragment>
   }
 `;
 
-function glowTexture() {
+// bright glows on the night sky; deep green strokes on the light theme
+const PALETTES = {
+  dark: {
+    blending: AdditiveBlending,
+    sky: "#d1fff2",
+    tail: "#00d19b",
+    head: "#e6fff7",
+    ring: "#4df3c9",
+    spark: "#b8ffe9",
+    glow: ["rgba(255, 255, 255, 1)", "rgba(200, 255, 236, 0.9)", "rgba(0, 208, 156, 0.25)", "rgba(0, 208, 156, 0)"],
+  },
+  light: {
+    blending: NormalBlending,
+    sky: "#6fb8a6",
+    tail: "#7fdcc3",
+    head: "#006e52",
+    ring: "#00b386",
+    spark: "#00a37a",
+    glow: ["rgba(0, 110, 82, 1)", "rgba(0, 163, 122, 0.85)", "rgba(0, 179, 134, 0.22)", "rgba(0, 179, 134, 0)"],
+  },
+};
+
+function glowTexture(stops: string[]) {
   const canvas = document.createElement("canvas");
   canvas.width = 64;
   canvas.height = 64;
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
   const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-  g.addColorStop(0, "rgba(255, 255, 255, 1)");
-  g.addColorStop(0.18, "rgba(200, 255, 236, 0.9)");
-  g.addColorStop(0.45, "rgba(0, 208, 156, 0.25)");
-  g.addColorStop(1, "rgba(0, 208, 156, 0)");
+  g.addColorStop(0, stops[0]);
+  g.addColorStop(0.18, stops[1]);
+  g.addColorStop(0.45, stops[2]);
+  g.addColorStop(1, stops[3]);
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 64, 64);
   const texture = new CanvasTexture(canvas);
@@ -111,12 +138,13 @@ type Star = {
   velocities: Float32Array;
 };
 
-export default function StarfallCanvas({ bus }: { bus: StarfallBus }) {
+export default function StarfallCanvas({ bus, light = false }: { bus: StarfallBus; light?: boolean }) {
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
+    const palette = light ? PALETTES.light : PALETTES.dark;
 
     let renderer: WebGLRenderer;
     try {
@@ -148,6 +176,7 @@ export default function StarfallCanvas({ bus }: { bus: StarfallBus }) {
       uTime: { value: 0 },
       uView: { value: new Vector2(1, 1) },
       uPixelRatio: { value: renderer.getPixelRatio() },
+      uColor: { value: new Color(palette.sky) },
     };
     const skyMat = new ShaderMaterial({
       uniforms: skyUniforms,
@@ -163,12 +192,12 @@ export default function StarfallCanvas({ bus }: { bus: StarfallBus }) {
     const trailGeo = new PlaneGeometry(1, 1);
     trailGeo.translate(-0.5, 0, 0);
     const ringGeo = new RingGeometry(0.9, 1, 64);
-    const texture = glowTexture();
+    const texture = glowTexture(palette.glow);
     const headMat = new SpriteMaterial({
       map: texture,
       transparent: true,
       depthWrite: false,
-      blending: AdditiveBlending,
+      blending: palette.blending,
     });
 
     const resize = () => {
@@ -212,12 +241,16 @@ export default function StarfallCanvas({ bus }: { bus: StarfallBus }) {
       const trail = new Mesh(
         trailGeo,
         new ShaderMaterial({
-          uniforms: { uOpacity: { value: 1 } },
+          uniforms: {
+            uOpacity: { value: 1 },
+            uTail: { value: new Color(palette.tail) },
+            uHead: { value: new Color(palette.head) },
+          },
           vertexShader: trailVertex,
           fragmentShader: trailFragment,
           transparent: true,
           depthWrite: false,
-          blending: AdditiveBlending,
+          blending: palette.blending,
         })
       );
       const head = new Sprite(headMat.clone());
@@ -226,11 +259,11 @@ export default function StarfallCanvas({ bus }: { bus: StarfallBus }) {
         const ring = new Mesh(
           ringGeo,
           new MeshBasicMaterial({
-            color: "#4df3c9",
+            color: palette.ring,
             transparent: true,
             opacity: 0,
             depthWrite: false,
-            blending: AdditiveBlending,
+            blending: palette.blending,
           })
         );
         ring.position.set(tx, ty, 0);
@@ -251,13 +284,13 @@ export default function StarfallCanvas({ bus }: { bus: StarfallBus }) {
       const sparks = new Points(
         sparkGeo,
         new PointsMaterial({
-          color: "#b8ffe9",
+          color: palette.spark,
           size: 2.4 * renderer.getPixelRatio(),
           sizeAttenuation: false,
           transparent: true,
           opacity: 0,
           depthWrite: false,
-          blending: AdditiveBlending,
+          blending: palette.blending,
         })
       );
       sparks.frustumCulled = false;
@@ -382,7 +415,7 @@ export default function StarfallCanvas({ bus }: { bus: StarfallBus }) {
       renderer.forceContextLoss();
       renderer.domElement.remove();
     };
-  }, [bus]);
+  }, [bus, light]);
 
   return <div ref={mountRef} className="absolute inset-0" aria-hidden="true" />;
 }

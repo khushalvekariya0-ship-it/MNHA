@@ -210,7 +210,7 @@ export default function InfoPage() {
             {/* floating data chips */}
             <div className="pointer-events-none absolute left-0 top-16 hidden lg:block">
               <div data-mouse-parallax="16">
-                <div className="glass animate-float rounded-2xl px-4 py-3 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)] [animation-duration:6s]">
+                <div className="glass animate-float rounded-2xl px-4 py-3 shadow-[0_20px_50px_-20px_var(--shadow-deep)] [animation-duration:6s]">
                   <p className="text-[11px] text-muted">Invested via MNHA</p>
                   <p className="text-lg font-bold text-ink">₹500 Cr+</p>
                 </div>
@@ -218,7 +218,7 @@ export default function InfoPage() {
             </div>
             <div className="pointer-events-none absolute bottom-20 right-0 hidden lg:block">
               <div data-mouse-parallax="-16">
-                <div className="glass animate-float rounded-2xl px-4 py-3 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.9)] [animation-delay:1.4s] [animation-duration:7s]">
+                <div className="glass animate-float rounded-2xl px-4 py-3 shadow-[0_20px_50px_-20px_var(--shadow-deep)] [animation-delay:1.4s] [animation-duration:7s]">
                   <p className="text-[11px] text-muted">Transactions today</p>
                   <p className="text-lg font-bold text-primary">+48,210</p>
                 </div>

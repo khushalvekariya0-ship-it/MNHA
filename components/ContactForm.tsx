@@ -99,7 +99,7 @@ export default function ContactForm() {
   return (
     <form
       data-animate-stagger=""
-      className={`card rounded-3xl p-7 shadow-[0_40px_100px_-40px_rgba(0,0,0,0.9)] sm:p-9 ${
+      className={`card rounded-3xl p-7 shadow-[0_40px_100px_-40px_var(--shadow-deep)] sm:p-9 ${
         shake ? "animate-shake" : ""
       }`}
       onSubmit={(e) => {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { LogoLockup } from "./Logo";
+import ThemeToggle from "./ThemeToggle";
 
 const navLinks = [
   { label: "Features", href: "/features" },
@@ -37,7 +38,7 @@ export default function Header() {
       <div
         className={`mx-auto flex max-w-6xl items-center justify-between rounded-full border pl-4 pr-2 transition-all duration-500 ${
           scrolled
-            ? "h-14 border-line-strong bg-canvas/75 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.9)] backdrop-blur-xl"
+            ? "h-14 border-line-strong bg-canvas/75 shadow-[0_12px_40px_-12px_var(--shadow-deep)] backdrop-blur-xl"
             : "h-16 border-line bg-surface/40 backdrop-blur-md"
         }`}
       >
@@ -57,7 +58,7 @@ export default function Header() {
           onMouseLeave={() => setPill((p) => ({ ...p, visible: false }))}
         >
           <span
-            className="pointer-events-none absolute top-1/2 h-9 -translate-y-1/2 rounded-full bg-white/[0.07] ring-1 ring-white/10 transition-all duration-300 ease-out"
+            className="pointer-events-none absolute top-1/2 h-9 -translate-y-1/2 rounded-full bg-ink/[0.07] ring-1 ring-ink/10 transition-all duration-300 ease-out"
             style={{
               left: pill.left,
               width: pill.width,
@@ -92,6 +93,10 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle
+            className="nav-item-in"
+            style={{ "--nav-delay": "0.52s" } as React.CSSProperties}
+          />
           <Link
             href="/signup"
             data-magnetic=""
@@ -103,7 +108,7 @@ export default function Header() {
 
           <button
             type="button"
-            className="nav-item-in rounded-full p-3 text-ink hover:bg-white/10 md:hidden"
+            className="nav-item-in rounded-full p-3 text-ink hover:bg-ink/10 md:hidden"
             style={{ "--nav-delay": "0.2s" } as React.CSSProperties}
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
@@ -142,7 +147,7 @@ export default function Header() {
               className={`block rounded-2xl px-4 py-3 text-sm font-medium ${
                 pathname === link.href
                   ? "bg-primary/10 text-primary"
-                  : "text-body hover:bg-white/5 hover:text-ink"
+                  : "text-body hover:bg-ink/5 hover:text-ink"
               }`}
             >
               {link.label}

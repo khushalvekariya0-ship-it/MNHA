@@ -16,6 +16,41 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+/* light: utilities that only apply while the light theme is on */
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+
+:root {
+  /* canvas as an rgb triplet, for overlays: rgb(var(--scrim) / 0.8) */
+  --scrim: 5 7 11;
+  --shadow-deep: rgb(0 0 0 / 0.9);
+}
+
+/* dark is the default; <html data-theme="light"> swaps the palette */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-canvas: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-raised: #eef2f6;
+  --color-line: #e2e8f0;
+  --color-line-strong: #cbd5e1;
+  --color-ink: #0b1220;
+  --color-body: #4a5568;
+  --color-muted: #6b7686;
+  --color-primary: #00b386;
+  --color-primary-dark: #00946f;
+  --color-primary-bright: #00d09c;
+  --color-accent: #5b6cff;
+  --scrim: 245 247 250;
+  --shadow-deep: rgb(15 23 42 / 0.16);
+}
+
+/* theme switch: the new theme is revealed by a circle (see ThemeToggle) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 html {
   color-scheme: dark;
   scroll-behavior: smooth;
@@ -33,12 +68,12 @@ h3 {
 
 ::selection {
   background-color: rgb(0 208 156 / 0.35);
-  color: #fff;
+  color: var(--color-ink);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2b3546 transparent;
+  scrollbar-color: var(--color-line-strong) transparent;
 }
 
 /* Lenis smooth scroll */
@@ -68,7 +103,7 @@ html.lenis body {
     position: relative;
     isolation: isolate;
     border: 1px solid var(--color-line);
-    background-color: rgb(11 16 23 / 0.85);
+    background-color: color-mix(in srgb, var(--color-surface) 85%, transparent);
     transition:
       border-color 0.3s ease,
       background-color 0.3s ease,
@@ -191,7 +226,7 @@ html.lenis body {
     gap: 0.6rem;
     border-radius: 9999px;
     border: 1px solid var(--color-line-strong);
-    background-color: rgb(255 255 255 / 0.03);
+    background-color: color-mix(in srgb, var(--color-ink) 3%, transparent);
     color: var(--color-ink);
     font-weight: 600;
     transition:
@@ -232,7 +267,11 @@ html.lenis body {
   }
 
   .text-gradient {
-    background: linear-gradient(180deg, #fff 35%, rgb(255 255 255 / 0.6));
+    background: linear-gradient(
+      180deg,
+      var(--color-ink) 35%,
+      color-mix(in srgb, var(--color-ink) 60%, transparent)
+    );
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -252,7 +291,7 @@ html.lenis body {
 
   .glass {
     border: 1px solid var(--color-line);
-    background-color: rgb(11 16 23 / 0.62);
+    background-color: color-mix(in srgb, var(--color-surface) 62%, transparent);
     -webkit-backdrop-filter: blur(18px);
     backdrop-filter: blur(18px);
   }
@@ -263,7 +302,7 @@ html.lenis body {
       340px circle at var(--mx, -999px) var(--my, -999px),
       #4df3c9,
       rgb(0 208 156 / 0.35) 30%,
-      rgb(255 255 255 / 0.05) 70%
+      color-mix(in srgb, var(--color-ink) 6%, transparent) 70%
     );
     -webkit-background-clip: text;
     background-clip: text;
@@ -281,10 +320,35 @@ html.lenis body {
   }
 
   .bg-grid {
+    --grid-line: color-mix(in srgb, var(--color-ink) 4.5%, transparent);
     background-image:
-      linear-gradient(to right, rgb(255 255 255 / 0.045) 1px, transparent 1px),
-      linear-gradient(to bottom, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
     background-size: 56px 56px;
+  }
+
+  /* light theme: surfaces lift off the page with soft shadows, and the mint
+     accents darken so they read on white (utilities still override these) */
+  [data-theme="light"] .card {
+    background-color: var(--color-surface);
+    box-shadow:
+      0 1px 2px rgb(15 23 42 / 0.04),
+      0 14px 34px -20px rgb(15 23 42 / 0.2);
+  }
+
+  [data-theme="light"] .glass {
+    background-color: color-mix(in srgb, var(--color-surface) 78%, transparent);
+    box-shadow: 0 10px 30px -18px rgb(15 23 42 / 0.25);
+  }
+
+  [data-theme="light"] .text-gradient-green {
+    background: linear-gradient(100deg, #00b386, #00946f 55%, #0b84d6);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  [data-theme="light"] .bg-grid {
+    --grid-line: rgb(11 18 32 / 0.05);
   }
 }
 
@@ -693,6 +757,17 @@ button:hover > svg[aria-hidden="true"] {
   animation: shimmer 3.5s linear infinite;
 }
 
+[data-theme="light"] .shimmer-text {
+  background-image: linear-gradient(
+    90deg,
+    #00b386 0%,
+    #00d09c 25%,
+    #007a5c 50%,
+    #00d09c 75%,
+    #00b386 100%
+  );
+}
+
 @keyframes gradient-shift {
   0%,
   100% {
@@ -1012,8 +1087,8 @@ body.loaded .light-sweep.sweep-load::after {
     display: block;
     width: 6px;
     height: 6px;
-    background: #fff;
-    box-shadow: 0 0 0 1.5px rgb(5 7 11 / 0.6);
+    background: var(--color-ink);
+    box-shadow: 0 0 0 1.5px rgb(var(--scrim) / 0.6);
     transition: opacity 0.2s ease;
   }
 
@@ -1174,6 +1249,26 @@ body.loaded .light-sweep.sweep-load::after {
 
 .flash-down {
   animation: flash-down 1.2s ease-out;
+}
+
+@keyframes flash-up-light {
+  from {
+    color: #00946f;
+  }
+}
+
+@keyframes flash-down-light {
+  from {
+    color: #e11d48;
+  }
+}
+
+[data-theme="light"] .flash-up {
+  animation-name: flash-up-light;
+}
+
+[data-theme="light"] .flash-down {
+  animation-name: flash-down-light;
 }
 
 @keyframes scroll-cue {

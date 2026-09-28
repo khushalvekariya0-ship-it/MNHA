@@ -53,7 +53,7 @@ export default function LiveCard() {
   const line = sparkPath(series, 230, 40);
 
   return (
-    <div className="glass w-[270px] rounded-2xl p-5 text-left shadow-[0_24px_60px_-20px_rgba(0,0,0,0.9)]">
+    <div className="glass w-[270px] rounded-2xl p-5 text-left shadow-[0_24px_60px_-20px_var(--shadow-deep)]">
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold uppercase tracking-wider text-muted">
           Portfolio

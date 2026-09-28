@@ -24,7 +24,7 @@ export default function Hero() {
       {/* dark vignette behind the copy keeps it legible over the particles;
           it fades out above the growth line */}
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[60%] bg-[radial-gradient(ellipse_46%_55%_at_50%_45%,rgba(5,7,11,0.92)_30%,rgba(5,7,11,0))]"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[60%] bg-[radial-gradient(ellipse_46%_55%_at_50%_45%,rgb(var(--scrim)/0.92)_30%,rgb(var(--scrim)/0))]"
         aria-hidden="true"
       />
 

@@ -385,7 +385,7 @@ export default function MissionCard() {
                     className={`relative flex w-full items-center gap-3 overflow-hidden rounded-xl border px-3.5 py-2.5 text-left transition-all duration-300 ${
                       isActive
                         ? "border-primary/50 bg-primary/10 shadow-[0_0_24px_-8px_rgba(0,208,156,0.6)]"
-                        : "border-line hover:border-line-strong hover:bg-white/[0.03]"
+                        : "border-line hover:border-line-strong hover:bg-ink/[0.03]"
                     }`}
                   >
                     <span
@@ -423,12 +423,12 @@ export default function MissionCard() {
         <div
           ref={phoneRef}
           {...swipe.handlers}
-          className="w-[250px] touch-pan-y rounded-[2.4rem] border border-white/15 bg-[#06080c] p-2 shadow-[0_40px_80px_-24px_rgba(0,0,0,0.9),0_0_90px_-30px_rgba(0,208,156,0.55)] transition-transform duration-700 group-hover:-translate-y-1.5"
+          className="w-[250px] touch-pan-y rounded-[2.4rem] border border-white/15 bg-[#06080c] p-2 shadow-[0_40px_80px_-24px_var(--shadow-deep),0_0_90px_-30px_rgba(0,208,156,0.55)] transition-transform duration-700 group-hover:-translate-y-1.5"
         >
           <div className="relative overflow-hidden rounded-[2rem] border border-line bg-surface">
             <div className="flex items-center justify-between px-5 pt-3 text-[10px] font-semibold text-ink">
               <span>9:41</span>
-              <span className="h-4 w-16 rounded-full bg-black ring-1 ring-white/5" />
+              <span className="h-4 w-16 rounded-full bg-black ring-1 ring-ink/5" />
               <span className="flex gap-0.5" aria-hidden="true">
                 <span className="h-2 w-0.5 rounded bg-ink/70" />
                 <span className="h-2.5 w-0.5 rounded bg-ink/80" />

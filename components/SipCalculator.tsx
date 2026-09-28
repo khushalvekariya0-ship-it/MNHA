@@ -104,7 +104,7 @@ export default function SipCalculator() {
                 className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-all ${
                   mode === tab.key
                     ? "bg-primary text-[#03140e] shadow-[0_0_24px_-6px_rgba(0,208,156,0.8)]"
-                    : "border border-line-strong bg-white/[0.03] text-body hover:border-primary/50 hover:text-ink"
+                    : "border border-line-strong bg-ink/[0.03] text-body hover:border-primary/50 hover:text-ink"
                 }`}
               >
                 {tab.label}
@@ -213,7 +213,7 @@ export default function SipCalculator() {
                     x2={W - PAD.r}
                     y1={y(tick)}
                     y2={y(tick)}
-                    stroke="#1c2531"
+                    stroke="var(--color-line)"
                     strokeWidth="1"
                   />
                   <text
@@ -221,7 +221,7 @@ export default function SipCalculator() {
                     y={y(tick) + 3.5}
                     textAnchor="end"
                     fontSize="10"
-                    fill="#5f6b7c"
+                    fill="var(--color-muted)"
                   >
                     {compactINR(tick)}
                   </text>
@@ -236,7 +236,7 @@ export default function SipCalculator() {
                   y={H - 14}
                   textAnchor="middle"
                   fontSize="10"
-                  fill="#5f6b7c"
+                  fill="var(--color-muted)"
                 >
                   {tick}
                 </text>
@@ -246,7 +246,7 @@ export default function SipCalculator() {
                 y={H - 1}
                 textAnchor="middle"
                 fontSize="10"
-                fill="#5f6b7c"
+                fill="var(--color-muted)"
               >
                 Years
               </text>
@@ -282,7 +282,7 @@ export default function SipCalculator() {
                     x2={x(hoverYear * 12)}
                     y1={PAD.t}
                     y2={PAD.t + plotH}
-                    stroke="#5f6b7c"
+                    stroke="var(--color-muted)"
                     strokeWidth="1"
                     strokeDasharray="3 3"
                   />
@@ -291,7 +291,7 @@ export default function SipCalculator() {
                     cy={y(hoverValue)}
                     r="4.5"
                     fill="#00d09c"
-                    stroke="#05070b"
+                    stroke="var(--color-canvas)"
                     strokeWidth="2"
                   />
                 </g>

@@ -243,7 +243,7 @@ export default function WaveBackdrop() {
 
   return (
     <div ref={rootRef} className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_100%_18%,rgba(34,211,238,0.22),transparent_32%),radial-gradient(ellipse_70%_45%_at_50%_75%,rgba(14,116,188,0.18),transparent_70%),linear-gradient(180deg,#05070b_0%,#04101f_22%,#051a2e_68%,#041424_88%,#05070b_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_100%_18%,rgba(34,211,238,0.22),transparent_32%),radial-gradient(ellipse_70%_45%_at_50%_75%,rgba(14,116,188,0.18),transparent_70%),linear-gradient(180deg,#05070b_0%,#04101f_22%,#051a2e_68%,#041424_88%,#05070b_100%)] light:bg-[radial-gradient(circle_at_100%_18%,rgba(34,211,238,0.2),transparent_32%),radial-gradient(ellipse_70%_45%_at_50%_75%,rgba(14,116,188,0.12),transparent_70%),linear-gradient(180deg,#f5f7fa_0%,#eaf3fb_40%,#dcecf8_80%,#f5f7fa_100%)]" />
 
       <div data-mouse-parallax="10" className="absolute inset-0">
         <svg ref={svgRef} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="size-full">
@@ -331,7 +331,7 @@ export default function WaveBackdrop() {
       </div>
 
       {/* keeps the copy crisp over the waves */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_34%_36%_at_50%_36%,rgba(4,12,26,0.65),transparent_78%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_34%_36%_at_50%_36%,rgba(4,12,26,0.65),transparent_78%)] light:bg-[radial-gradient(ellipse_34%_36%_at_50%_36%,rgba(245,247,250,0.8),transparent_78%)]" />
     </div>
   );
 }

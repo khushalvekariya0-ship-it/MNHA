@@ -169,14 +169,14 @@ export default function ProductShowcase() {
                       aria-current={active ? "true" : undefined}
                       className={`flex w-full items-center gap-3 rounded-xl border px-4 py-2.5 text-left transition-all duration-300 lg:py-3 ${
                         active
-                          ? "border-line-strong bg-white/[0.06]"
+                          ? "border-line-strong bg-ink/[0.06]"
                           : "border-line lg:border-transparent lg:opacity-45 lg:hover:opacity-80"
                       }`}
                     >
                       <span
                         className="size-2 rounded-full transition-all duration-300"
                         style={{
-                          backgroundColor: active ? product.accent : "#2b3546",
+                          backgroundColor: active ? product.accent : "var(--color-line-strong)",
                           boxShadow: active ? `0 0 10px ${product.accent}` : undefined,
                         }}
                         aria-hidden="true"
@@ -202,7 +202,7 @@ export default function ProductShowcase() {
               {...swipe.handlers}
               className="relative mx-auto h-[480px] w-[250px] touch-pan-y rounded-[2.4rem] border border-white/15 bg-[#06080c] p-2 transition-shadow duration-700 sm:h-[520px] sm:w-[270px]"
               style={{
-                boxShadow: `0 40px 80px -24px rgba(0,0,0,0.9), 0 0 90px -20px ${current.accent}`,
+                boxShadow: `0 40px 80px -24px var(--shadow-deep), 0 0 90px -20px ${current.accent}`,
               }}
             >
               <div className="relative h-full overflow-hidden rounded-[2rem] border border-line bg-surface">

@@ -9,7 +9,7 @@ export default function InvestorReviews() {
     <section className="relative isolate overflow-hidden">
       {/* night sky with a faint glow where the stars come down */}
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_30%_at_50%_100%,rgba(0,208,156,0.10),transparent_75%),linear-gradient(180deg,#05070b_0%,#060a12_45%,#07101a_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_30%_at_50%_100%,rgba(0,208,156,0.10),transparent_75%),linear-gradient(180deg,#05070b_0%,#060a12_45%,#07101a_100%)] light:bg-[radial-gradient(ellipse_70%_30%_at_50%_100%,rgba(0,179,134,0.12),transparent_75%),linear-gradient(180deg,#f5f7fa_0%,#eef4f8_45%,#e6f4ef_100%)]" />
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-canvas to-transparent" />
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-canvas to-transparent" />
       </div>
@@ -36,7 +36,7 @@ export default function InvestorReviews() {
         <div data-scene-anchor="" className="h-[300px] w-full xl:h-auto xl:min-h-28 xl:flex-1" />
 
         <div data-animate="zoom" className="mt-6 xl:mt-0 xl:[--reveal-delay:0.6s]">
-          <div className="flex items-center gap-6 rounded-full border border-white/10 bg-[rgba(8,16,26,0.6)] px-6 py-3.5 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.9),0_0_50px_-24px_rgba(0,208,156,0.6)] backdrop-blur-xl sm:gap-10 sm:px-10 sm:py-4">
+          <div className="flex items-center gap-6 rounded-full border border-ink/10 bg-surface/65 px-6 py-3.5 shadow-[0_24px_60px_-24px_var(--shadow-deep),0_0_50px_-24px_rgba(0,208,156,0.6)] backdrop-blur-xl sm:gap-10 sm:px-10 sm:py-4">
             <div className="flex items-center gap-3.5">
               <span className="flex size-11 items-center justify-center rounded-full bg-primary/15 text-primary ring-1 ring-primary/30">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -52,7 +52,7 @@ export default function InvestorReviews() {
                 <p className="text-xs text-body sm:text-sm">Investors</p>
               </div>
             </div>
-            <span className="h-10 w-px bg-white/10" aria-hidden="true" />
+            <span className="h-10 w-px bg-ink/10" aria-hidden="true" />
             <div className="flex items-center gap-3.5">
               <span className="flex size-11 items-center justify-center rounded-full bg-primary/15 text-primary ring-1 ring-primary/30">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -78,7 +78,7 @@ export default function InvestorReviews() {
         aria-hidden="true"
       >
         <p
-          className={`${caveat.className} write-in text-4xl leading-[1.05] text-primary-bright drop-shadow-[0_0_12px_rgba(0,208,156,0.45)]`}
+          className={`${caveat.className} write-in text-4xl leading-[1.05] text-primary-bright drop-shadow-[0_0_12px_rgba(0,208,156,0.45)] light:text-primary light:drop-shadow-none`}
           style={{ animationDelay: "1.4s" }}
         >
           Your future

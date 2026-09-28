@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import type { StarfallBus } from "./three/StarfallCanvas";
+import { useTheme } from "./theme";
 
 const StarfallCanvas = dynamic(() => import("./three/StarfallCanvas"), { ssr: false });
 
@@ -45,6 +46,7 @@ function layoutTop(el: HTMLElement, root: HTMLElement) {
 }
 
 export default function StarfallReviews() {
+  const theme = useTheme();
   const rootRef = useRef<HTMLDivElement>(null);
   const busRef = useRef<StarfallBus>({});
   const [slots, setSlots] = useState<Slot[]>([]);
@@ -179,7 +181,7 @@ export default function StarfallReviews() {
 
   return (
     <div ref={rootRef} className="pointer-events-none absolute inset-0">
-      <StarfallCanvas bus={busRef.current} />
+      <StarfallCanvas bus={busRef.current} light={theme === "light"} />
 
       {chips.map((chip) => {
         const slot = slots[chip.slot];
@@ -197,7 +199,7 @@ export default function StarfallReviews() {
             data-chip={chip.id}
             aria-hidden="true"
             style={{ ...place, maxWidth: slot.maxW }}
-            className={`absolute flex w-max items-center gap-3 rounded-2xl border border-white/10 bg-[rgba(8,16,26,0.72)] py-2.5 pl-2.5 pr-4 shadow-[0_18px_50px_-20px_rgba(0,0,0,0.9),0_0_30px_-16px_rgba(0,208,156,0.55)] backdrop-blur-md transition-[opacity,scale,translate,filter] duration-500 ease-out ${
+            className={`absolute flex w-max items-center gap-3 rounded-2xl border border-ink/10 bg-surface/75 py-2.5 pl-2.5 pr-4 shadow-[0_18px_50px_-20px_var(--shadow-deep),0_0_30px_-16px_rgba(0,208,156,0.55)] backdrop-blur-md transition-[opacity,scale,translate,filter] duration-500 ease-out ${
               chip.phase === "shown"
                 ? "scale-100 opacity-100 blur-0"
                 : chip.phase === "incoming"
@@ -207,7 +209,7 @@ export default function StarfallReviews() {
           >
             <span
               data-avatar=""
-              className={`flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold text-white ring-2 ring-white/15 ${review.color} ${
+              className={`flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold text-white ring-2 ring-ink/15 ${review.color} ${
                 chip.phase === "shown" ? "land-flash" : ""
               }`}
             >
