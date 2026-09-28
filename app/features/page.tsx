@@ -605,7 +605,7 @@ export default function FeaturesPage() {
       {/* 7. Final CTA */}
       <CTA
         title="Your wealth. One smarter platform."
-        subtitle="Join lakhs of investors who grow their money with MNHA — simply, safely and commission-free."
+        subtitle="Join thousands of investors who grow their money with MNHA — simply, safely and commission-free."
         accent={["smarter", "platform"]}
         backdrop="waves"
       />
