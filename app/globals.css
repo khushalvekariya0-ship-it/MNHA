@@ -849,21 +849,74 @@ button:hover > svg[aria-hidden="true"] {
   animation: confetti-burst 0.9s ease-out 0.25s both;
 }
 
-/* preloader: logo, progress bar, then the curtain lifts */
-@keyframes preloader-logo {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
+/* preloader: the M draws itself, the name rises, a counter runs to 100,
+   then an iris opens from the centre with a glowing ring on its edge */
+@property --hole {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* separate names: the exit must start fresh, not retime the safety net */
+@keyframes preloader-iris {
   to {
-    opacity: 1;
-    transform: scale(1);
+    --hole: 75vmax;
   }
 }
 
-@keyframes preloader-lift {
+@keyframes preloader-open {
   to {
-    transform: translateY(-100%);
+    --hole: 75vmax;
+  }
+}
+
+@keyframes preloader-ring {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes preloader-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.55) rotate(-14deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes preloader-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes preloader-rise {
+  to {
+    transform: none;
+  }
+}
+
+@keyframes preloader-breathe {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
   }
 }
 
@@ -872,43 +925,92 @@ button:hover > svg[aria-hidden="true"] {
   inset: 0;
   z-index: 100;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   background: var(--color-canvas);
-  transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1);
-  /* safety net: lift even if the app never hydrates */
-  animation: preloader-lift 0.8s cubic-bezier(0.76, 0, 0.24, 1) 4s forwards;
+  -webkit-mask: radial-gradient(circle at 50% 50%, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
+  mask: radial-gradient(circle at 50% 50%, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
+  /* safety net: open even if the app never hydrates */
+  animation: preloader-iris 1s cubic-bezier(0.76, 0, 0.24, 1) 4s forwards;
+}
+
+.preloader.is-done {
+  animation: preloader-open 0.95s cubic-bezier(0.76, 0, 0.24, 1) forwards;
 }
 
 .preloader::before {
   content: "";
   position: absolute;
-  width: 360px;
-  height: 360px;
+  width: 380px;
+  height: 380px;
   border-radius: 9999px;
-  background: rgb(0 208 156 / 0.18);
+  background: rgb(0 208 156 / 0.16);
   filter: blur(80px);
+  animation: preloader-breathe 2.4s ease-in-out infinite;
 }
 
-.preloader.is-done {
-  transform: translateY(-100%);
+/* ring riding the edge of the opening */
+.preloader::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--hole) * 2 + 4px);
+  height: calc(var(--hole) * 2 + 4px);
+  translate: -50% -50%;
+  border-radius: 9999px;
+  border: 1.5px solid rgb(77 243 201 / 0.9);
+  box-shadow:
+    0 0 28px rgb(0 208 156 / 0.55),
+    inset 0 0 22px rgb(0 208 156 / 0.35);
+  opacity: 0;
+  pointer-events: none;
 }
 
-.preloader-logo {
-  animation: preloader-logo 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+.preloader.is-done::after {
+  animation: preloader-ring 0.95s ease-out forwards;
+}
+
+.preloader-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition:
+    opacity 0.35s ease,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.preloader.is-done .preloader-content {
+  opacity: 0;
+  transform: scale(1.14);
+}
+
+.preloader-mark {
+  animation: preloader-pop 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.preloader-m {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: preloader-draw 0.8s cubic-bezier(0.65, 0, 0.35, 1) 0.3s forwards;
+}
+
+.preloader-letter {
+  transform: translateY(110%);
+  animation: preloader-rise 0.65s cubic-bezier(0.22, 1, 0.36, 1)
+    calc(0.35s + var(--i) * 0.07s) forwards;
 }
 
 .preloader-tag {
   opacity: 0;
-  animation: word-in 0.6s ease 0.45s forwards;
+  animation: word-in 0.6s ease 0.75s forwards;
 }
 
 .preloader-bar {
   position: relative;
-  width: 140px;
+  width: 168px;
   height: 2px;
-  margin-top: 22px;
   overflow: hidden;
   border-radius: 2px;
   background: var(--color-line);
@@ -917,13 +1019,11 @@ button:hover > svg[aria-hidden="true"] {
 .preloader-bar > span {
   display: block;
   height: 100%;
-  background: var(--color-primary);
+  background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary-bright));
   box-shadow: 0 0 10px var(--color-primary);
   transform: scaleX(0);
   transform-origin: left;
-  animation: dash-grow 1s cubic-bezier(0.65, 0, 0.35, 1) 0.15s forwards;
 }
-
 /* navbar items drop in after the preloader */
 @keyframes nav-in {
   from {
