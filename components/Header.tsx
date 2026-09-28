@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { LogoLockup } from "./Logo";
 import ThemeToggle from "./ThemeToggle";
+import { useScrolledPast } from "./useScrolledPast";
 
 const navLinks = [
   { label: "Features", href: "/features" },
@@ -27,14 +28,22 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => setOpen(false), [pathname]);
+  // further down the page the floating menu + theme buttons take over
+  const tucked = useScrolledPast();
+
+  useEffect(() => setOpen(false), [pathname, tucked]);
 
   const movePill = (el: HTMLElement) => {
     setPill({ left: el.offsetLeft, width: el.offsetWidth, visible: true });
   };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4">
+    <header
+      inert={tucked}
+      className={`fixed inset-x-0 top-0 z-50 px-3 pt-3 transition-[translate,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-4 ${
+        tucked ? "pointer-events-none -translate-y-[130%] opacity-0" : "translate-y-0 opacity-100"
+      }`}
+    >
       <div
         className={`mx-auto flex max-w-6xl items-center justify-between rounded-full border pl-4 pr-2 transition-all duration-500 ${
           scrolled

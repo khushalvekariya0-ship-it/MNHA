@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { LogoLockup } from "./Logo";
 import ThemeToggle from "./ThemeToggle";
 import { lockScroll, scrollToTop } from "./SmoothScroll";
+import { useScrolledPast } from "./useScrolledPast";
 
 const links = [
   { label: "Home", href: "/" },
@@ -18,11 +19,11 @@ const links = [
 const R = 21;
 const CIRCUMFERENCE = 2 * Math.PI * R;
 
-// appears once the page is scrolled: menu + theme on wide screens (the mobile
-// header already carries both), and back-to-top everywhere
+// once the page is scrolled the header tucks away: menu + theme float at the
+// top right, back-to-top at the bottom right
 export default function FloatingDock() {
   const pathname = usePathname();
-  const [visible, setVisible] = useState(false);
+  const visible = useScrolledPast();
   const [open, setOpen] = useState(false);
   const ringRef = useRef<SVGCircleElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -34,7 +35,6 @@ export default function FloatingDock() {
       raf = 0;
       const max = document.documentElement.scrollHeight - window.innerHeight;
       const progress = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
-      setVisible(window.scrollY > 500);
       ringRef.current?.setAttribute("stroke-dashoffset", String(CIRCUMFERENCE * (1 - progress)));
     };
     const onScroll = () => {
@@ -50,12 +50,7 @@ export default function FloatingDock() {
     };
   }, []);
 
-  // a new page starts at the top, so re-check once its scroll reset has run
-  useEffect(() => {
-    setOpen(false);
-    const recheck = window.setTimeout(() => setVisible(window.scrollY > 500), 80);
-    return () => window.clearTimeout(recheck);
-  }, [pathname]);
+  useEffect(() => setOpen(false), [pathname]);
 
   useEffect(() => {
     if (!open) return;
@@ -77,38 +72,44 @@ export default function FloatingDock() {
 
   return (
     <>
+      {/* top right edge, stacked, in line with back-to-top below */}
       <div
-        className={`fixed bottom-5 right-4 z-40 flex flex-col items-center gap-3 transition-[opacity,translate] duration-300 ease-out sm:bottom-7 sm:right-7 ${
-          shown ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
+        inert={!shown}
+        className={`fixed right-4 top-4 z-40 flex flex-col items-center gap-1 rounded-full border border-line-strong bg-surface/80 p-1 shadow-[0_12px_30px_-12px_var(--shadow-deep)] backdrop-blur-md transition-[opacity,translate] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:right-7 sm:top-6 ${
+          shown ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-6 opacity-0"
         }`}
       >
-        <div className="hidden flex-col items-center gap-1.5 rounded-full border border-line-strong bg-surface/80 p-1 shadow-[0_12px_30px_-12px_var(--shadow-deep)] backdrop-blur-md md:flex">
-          <button
-            ref={menuButtonRef}
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-            aria-expanded={open}
-            aria-controls="site-menu"
-            tabIndex={shown ? 0 : -1}
-            className="group flex size-10 items-center justify-center rounded-full text-ink transition-[background-color,scale] duration-300 hover:bg-ink/[0.08] active:scale-90"
-          >
-            <span className="relative block h-3.5 w-[18px]" aria-hidden="true">
-              <span className="absolute left-0 top-0 h-0.5 w-full rounded bg-current transition-all duration-300 group-hover:w-2/3" />
-              <span className="absolute left-0 top-1.5 h-0.5 w-full rounded bg-current" />
-              <span className="absolute left-0 top-3 h-0.5 w-full rounded bg-current transition-all duration-300 group-hover:w-1/2" />
-            </span>
-          </button>
-          <span className="h-px w-6 bg-line-strong" aria-hidden="true" />
-          <ThemeToggle className="bg-transparent! ring-0! hover:bg-ink/[0.08]!" />
-        </div>
+        <button
+          ref={menuButtonRef}
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Open menu"
+          aria-expanded={open}
+          aria-controls="site-menu"
+          className="group flex size-10 items-center justify-center rounded-full text-ink transition-[background-color,scale] duration-300 hover:bg-ink/[0.08] active:scale-90"
+        >
+          <span className="relative block h-3.5 w-[18px]" aria-hidden="true">
+            <span className="absolute right-0 top-0 h-0.5 w-full rounded bg-current transition-all duration-300 group-hover:w-2/3" />
+            <span className="absolute right-0 top-1.5 h-0.5 w-full rounded bg-current" />
+            <span className="absolute right-0 top-3 h-0.5 w-full rounded bg-current transition-all duration-300 group-hover:w-1/2" />
+          </span>
+        </button>
+        <span className="h-px w-6 bg-line-strong" aria-hidden="true" />
+        <ThemeToggle className="bg-transparent! ring-0! hover:bg-ink/[0.08]!" />
+      </div>
 
+      {/* bottom right */}
+      <div
+        inert={!visible}
+        className={`fixed bottom-5 right-4 z-40 transition-[opacity,translate] duration-300 ease-out sm:bottom-7 sm:right-7 ${
+          visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
+        }`}
+      >
         <button
           type="button"
           onClick={scrollToTop}
           aria-label="Back to top"
           title="Back to top"
-          tabIndex={shown ? 0 : -1}
           className="group relative flex size-12 items-center justify-center rounded-full border border-line-strong bg-surface/80 text-ink shadow-[0_12px_30px_-12px_var(--shadow-deep)] backdrop-blur-md transition-[border-color,box-shadow,scale] duration-300 hover:border-primary hover:shadow-[0_0_24px_-4px_rgba(0,208,156,0.6)] active:scale-90"
         >
           {/* ring fills with how far down the page you are */}
