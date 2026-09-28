@@ -8,6 +8,7 @@ import ScrollProgress from "@/components/ScrollProgress";
 import Preloader from "@/components/Preloader";
 import CursorFx from "@/components/CursorFx";
 import SmoothScroll from "@/components/SmoothScroll";
+import BackToTop from "@/components/BackToTop";
 import { themeScript } from "@/components/theme-script";
 import "./globals.css";
 
@@ -59,6 +60,7 @@ export default function RootLayout({
             while position: sticky sections keep working */}
         <main className="flex-1 overflow-x-clip">{children}</main>
         <Footer />
+        <BackToTop />
       </body>
     </html>
   );

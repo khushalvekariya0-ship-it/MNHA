@@ -4,6 +4,15 @@ import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 
+let activeLenis: Lenis | null = null;
+
+// scrolls with Lenis when it runs, so the glide matches normal wheel scrolling
+export function scrollToTop() {
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (activeLenis) activeLenis.scrollTo(0, { duration: 1.4, immediate: reduced });
+  else window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
+}
+
 export default function SmoothScroll() {
   const pathname = usePathname();
   const lenisRef = useRef<Lenis | null>(null);
@@ -17,6 +26,7 @@ export default function SmoothScroll() {
       anchors: true,
     });
     lenisRef.current = lenis;
+    activeLenis = lenis;
     let raf = 0;
     const loop = (time: number) => {
       lenis.raf(time);
@@ -27,6 +37,7 @@ export default function SmoothScroll() {
       cancelAnimationFrame(raf);
       lenis.destroy();
       lenisRef.current = null;
+      activeLenis = null;
     };
   }, []);
 
