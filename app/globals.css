@@ -482,20 +482,6 @@ button:hover > svg[aria-hidden="true"] {
   transform: translateX(5px);
 }
 
-/* decorative glow blobs slowly breathe */
-@keyframes drift {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(18px, -22px) scale(1.08);
-  }
-}
-
-.pointer-events-none.blur-3xl {
-  animation: drift 16s ease-in-out infinite;
-}
 
 /* header nav underline grow */
 .nav-underline {
@@ -849,40 +835,15 @@ button:hover > svg[aria-hidden="true"] {
   animation: confetti-burst 0.9s ease-out 0.25s both;
 }
 
-/* preloader: the M draws itself, the name rises, a counter runs to 100,
-   then an iris opens from the centre with a glowing ring on its edge */
-@property --hole {
-  syntax: "<length>";
-  inherits: true;
-  initial-value: 0px;
-}
-
-/* separate names: the exit must start fresh, not retime the safety net */
-@keyframes preloader-iris {
-  to {
-    --hole: 75vmax;
-  }
-}
-
-@keyframes preloader-open {
-  to {
-    --hole: 75vmax;
-  }
-}
-
-@keyframes preloader-ring {
-  0% {
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  75% {
-    opacity: 0.7;
-  }
-  100% {
-    opacity: 0;
-  }
+/* preloader. Pure CSS from first paint, so it plays in full however long
+   the JS takes. intro: the M draws itself, the name rises, a counter runs to
+   100. transition: the logo folds into a point, the point stretches into a
+   line across the screen, and the screen splits open along that line. An
+   inline script in layout.tsx adds body.loaded when the split starts. */
+@property --pl-count {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
 }
 
 @keyframes preloader-pop {
@@ -920,70 +881,189 @@ button:hover > svg[aria-hidden="true"] {
   }
 }
 
+@keyframes pl-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes pl-count {
+  to {
+    --pl-count: 100;
+  }
+}
+
+@keyframes pl-fade-out {
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes pl-fold {
+  60% {
+    opacity: 1;
+    transform: scale(0.12) rotate(90deg);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.04) rotate(90deg);
+  }
+}
+
+@keyframes pl-line {
+  from {
+    opacity: 1;
+    transform: translateY(-50%) scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1);
+  }
+}
+
+@keyframes pl-line-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes pl-split-up {
+  to {
+    transform: translateY(-101%);
+  }
+}
+
+@keyframes pl-split-down {
+  to {
+    transform: translateY(101%);
+  }
+}
+
+@keyframes pl-edge {
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pl-hide {
+  to {
+    opacity: 0;
+  }
+}
+
 .preloader {
+  /* when the logo starts folding away */
+  --exit: 1.6s;
   position: fixed;
   inset: 0;
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* never blocks the page, even before React removes it */
+  pointer-events: none;
+  animation: pl-hide 0.01s linear calc(var(--exit) + 1.8s) forwards;
+}
+
+.preloader-half {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: calc(50% + 1px);
   background: var(--color-canvas);
-  -webkit-mask: radial-gradient(circle at 50% 50%, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
-  mask: radial-gradient(circle at 50% 50%, transparent var(--hole), #000 calc(var(--hole) + 0.5px));
-  /* safety net: open even if the app never hydrates */
-  animation: preloader-iris 1s cubic-bezier(0.76, 0, 0.24, 1) 4s forwards;
 }
 
-.preloader.is-done {
-  animation: preloader-open 0.95s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+.preloader-half.is-top {
+  top: 0;
+  animation: pl-split-up 0.85s cubic-bezier(0.76, 0, 0.24, 1) calc(var(--exit) + 0.9s) forwards;
 }
 
-.preloader::before {
+.preloader-half.is-bottom {
+  bottom: 0;
+  animation: pl-split-down 0.85s cubic-bezier(0.76, 0, 0.24, 1) calc(var(--exit) + 0.9s) forwards;
+}
+
+/* glowing edges the halves carry away as they part */
+.preloader-half::after {
   content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-primary-bright) 18%,
+    #b8ffe9 50%,
+    var(--color-primary-bright) 82%,
+    transparent
+  );
+  box-shadow: 0 0 18px rgb(0 208 156 / 0.8);
+  opacity: 0;
+  animation: pl-edge 0.95s ease calc(var(--exit) + 0.88s) forwards;
+}
+
+.preloader-half.is-top::after {
+  bottom: 0;
+}
+
+.preloader-half.is-bottom::after {
+  top: 0;
+}
+
+.preloader-glow {
   position: absolute;
   width: 380px;
   height: 380px;
   border-radius: 9999px;
   background: rgb(0 208 156 / 0.16);
   filter: blur(80px);
-  animation: preloader-breathe 2.4s ease-in-out infinite;
+  animation:
+    preloader-breathe 2.4s ease-in-out infinite,
+    pl-fade-out 0.28s ease var(--exit) forwards;
 }
 
-/* ring riding the edge of the opening */
-.preloader::after {
-  content: "";
+.preloader-line {
   position: absolute;
-  left: 50%;
+  left: 0;
+  right: 0;
   top: 50%;
-  width: calc(var(--hole) * 2 + 4px);
-  height: calc(var(--hole) * 2 + 4px);
-  translate: -50% -50%;
-  border-radius: 9999px;
-  border: 1.5px solid rgb(77 243 201 / 0.9);
-  box-shadow:
-    0 0 28px rgb(0 208 156 / 0.55),
-    inset 0 0 22px rgb(0 208 156 / 0.35);
+  z-index: 2;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-primary-bright) 15%,
+    #d7fff3 50%,
+    var(--color-primary-bright) 85%,
+    transparent
+  );
+  box-shadow: 0 0 22px rgb(0 208 156 / 0.9);
   opacity: 0;
-  pointer-events: none;
+  transform: translateY(-50%) scaleX(0);
+  animation:
+    pl-line 0.45s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--exit) + 0.4s) forwards,
+    pl-line-out 0.25s linear calc(var(--exit) + 0.95s) forwards;
 }
 
-.preloader.is-done::after {
-  animation: preloader-ring 0.95s ease-out forwards;
-}
-
+/* the logo sits dead centre so it folds straight onto the line */
 .preloader-content {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition:
-    opacity 0.35s ease,
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 1;
 }
 
-.preloader.is-done .preloader-content {
-  opacity: 0;
-  transform: scale(1.14);
+.preloader-mark-wrap {
+  animation: pl-fold 0.42s cubic-bezier(0.55, 0, 1, 0.45) calc(var(--exit) + 0.08s) forwards;
 }
 
 .preloader-mark {
@@ -994,6 +1074,17 @@ button:hover > svg[aria-hidden="true"] {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   animation: preloader-draw 0.8s cubic-bezier(0.65, 0, 0.35, 1) 0.3s forwards;
+}
+
+.preloader-text {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: pl-fade-out 0.28s ease var(--exit) forwards;
 }
 
 .preloader-letter {
@@ -1016,6 +1107,7 @@ button:hover > svg[aria-hidden="true"] {
   background: var(--color-line);
 }
 
+/* bar and counter share one clock */
 .preloader-bar > span {
   display: block;
   height: 100%;
@@ -1023,6 +1115,16 @@ button:hover > svg[aria-hidden="true"] {
   box-shadow: 0 0 10px var(--color-primary);
   transform: scaleX(0);
   transform-origin: left;
+  animation: pl-fill 1.3s cubic-bezier(0.33, 1, 0.68, 1) 0.2s forwards;
+}
+
+.preloader-count {
+  counter-reset: pl var(--pl-count);
+  animation: pl-count 1.3s cubic-bezier(0.33, 1, 0.68, 1) 0.2s forwards;
+}
+
+.preloader-count::after {
+  content: counter(pl) "%";
 }
 /* navbar items drop in after the preloader */
 @keyframes nav-in {
@@ -1181,6 +1283,7 @@ body.loaded .light-sweep.sweep-load::after {
     border-radius: 9999px;
     pointer-events: none;
     transform: translate(-50%, -50%);
+    will-change: transform;
   }
 
   .cursor-dot {
@@ -1442,8 +1545,7 @@ body.loaded .light-sweep.sweep-load::after {
   .animate-shake,
   .animate-pop,
   .num-pop,
-  .scroll-cue-dot,
-  .pointer-events-none.blur-3xl {
+  .scroll-cue-dot {
     animation: none !important;
   }
 

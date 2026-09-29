@@ -3,6 +3,20 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
+// building an Intl formatter is slow, so each precision gets one, reused every frame
+const formatters = new Map<number, Intl.NumberFormat>();
+function indianFormat(decimals: number) {
+  let f = formatters.get(decimals);
+  if (!f) {
+    f = new Intl.NumberFormat("en-IN", {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+    formatters.set(decimals, f);
+  }
+  return f;
+}
+
 function animateCount(el: HTMLElement) {
   const original = el.textContent ?? "";
   const match = original.match(/^([^\d]*)([\d,]+(?:\.\d+)?)(.*)$/);
@@ -11,20 +25,21 @@ function animateCount(el: HTMLElement) {
   const hasComma = numStr.includes(",");
   const target = parseFloat(numStr.replace(/,/g, ""));
   const decimals = (numStr.split(".")[1] ?? "").length;
+  const format = indianFormat(decimals);
   const duration = 1500;
   const start = performance.now();
+  let shown = "";
 
   const tick = (now: number) => {
     const t = Math.min((now - start) / duration, 1);
     const eased = 1 - Math.pow(1 - t, 3);
-    let value = (target * eased).toFixed(decimals);
-    if (hasComma) {
-      value = Number(value).toLocaleString("en-IN", {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      });
+    const n = target * eased;
+    const value = hasComma ? format.format(Number(n.toFixed(decimals))) : n.toFixed(decimals);
+    const text = `${prefix}${value}${suffix}`;
+    if (text !== shown) {
+      el.textContent = text;
+      shown = text;
     }
-    el.textContent = `${prefix}${value}${suffix}`;
     if (t < 1) {
       requestAnimationFrame(tick);
     } else {
@@ -66,10 +81,11 @@ export default function FxProvider() {
         : [e.target.closest<HTMLElement>(".card")].filter(
             (card): card is HTMLElement => card !== null
           );
-      cards.forEach((card) => {
-        const rect = card.getBoundingClientRect();
-        card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
-        card.style.setProperty("--my", `${e.clientY - rect.top}px`);
+      // read every rect first, then write, so the browser lays out once
+      const rects = cards.map((card) => card.getBoundingClientRect());
+      cards.forEach((card, i) => {
+        card.style.setProperty("--mx", `${e.clientX - rects[i].left}px`);
+        card.style.setProperty("--my", `${e.clientY - rects[i].top}px`);
       });
     };
     const onPointer = (e: PointerEvent) => {
@@ -160,18 +176,28 @@ export default function FxProvider() {
       document.querySelectorAll<HTMLElement>("[data-mouse-parallax]")
     );
     if (!reduced && fine && mouseEls.length) {
-      const onMouse = (e: MouseEvent) => {
-        const nx = e.clientX / window.innerWidth - 0.5;
-        const ny = e.clientY / window.innerHeight - 0.5;
-        mouseEls.forEach((el) => {
-          const factor = parseFloat(el.dataset.mouseParallax || "8");
-          el.style.transform = `translate(${(nx * factor).toFixed(1)}px, ${(
-            ny * factor
+      const factors = mouseEls.map((el) => parseFloat(el.dataset.mouseParallax || "8"));
+      let raf = 0;
+      let nx = 0;
+      let ny = 0;
+      const paint = () => {
+        raf = 0;
+        mouseEls.forEach((el, i) => {
+          el.style.transform = `translate(${(nx * factors[i]).toFixed(1)}px, ${(
+            ny * factors[i]
           ).toFixed(1)}px)`;
         });
       };
+      const onMouse = (e: MouseEvent) => {
+        nx = e.clientX / window.innerWidth - 0.5;
+        ny = e.clientY / window.innerHeight - 0.5;
+        if (!raf) raf = requestAnimationFrame(paint);
+      };
       window.addEventListener("mousemove", onMouse, { passive: true });
-      cleanups.push(() => window.removeEventListener("mousemove", onMouse));
+      cleanups.push(() => {
+        window.removeEventListener("mousemove", onMouse);
+        cancelAnimationFrame(raf);
+      });
     }
 
     // magnetic buttons: pull toward the cursor
@@ -202,9 +228,22 @@ export default function FxProvider() {
       document.querySelectorAll<HTMLElement>("[data-scroll-fade]")
     );
     if (!reduced && fadeEls.length) {
-      const onFade = () => {
-        const y = window.scrollY;
-        const p = Math.min(Math.max(y / (window.innerHeight * 0.6), 0), 1);
+      let raf = 0;
+      let faded = false;
+      // read in the scroll/resize events (layout is clean there); the frame only writes
+      let y = window.scrollY;
+      let vh = window.innerHeight;
+      const onResize = () => {
+        vh = window.innerHeight;
+      };
+      window.addEventListener("resize", onResize);
+      cleanups.push(() => window.removeEventListener("resize", onResize));
+      const paint = () => {
+        raf = 0;
+        const p = Math.min(Math.max(y / (vh * 0.6), 0), 1);
+        // once the hero is fully gone there is nothing left to update
+        if (p === 1 && faded) return;
+        faded = p === 1;
         fadeEls.forEach((el) => {
           el.style.opacity = String(1 - p);
           el.style.transform = `translateY(${(y * 0.18).toFixed(1)}px) scale(${(
@@ -213,9 +252,16 @@ export default function FxProvider() {
           ).toFixed(3)})`;
         });
       };
-      onFade();
+      const onFade = () => {
+        y = window.scrollY;
+        if (!raf) raf = requestAnimationFrame(paint);
+      };
+      paint();
       window.addEventListener("scroll", onFade, { passive: true });
-      cleanups.push(() => window.removeEventListener("scroll", onFade));
+      cleanups.push(() => {
+        window.removeEventListener("scroll", onFade);
+        cancelAnimationFrame(raf);
+      });
     }
 
     // scroll parallax for [data-parallax] elements
@@ -223,19 +269,22 @@ export default function FxProvider() {
       document.querySelectorAll<HTMLElement>("[data-parallax]")
     );
     if (!reduced && parallaxEls.length) {
+      const speeds = parallaxEls.map((el) => parseFloat(el.dataset.parallax || "0.1"));
       let raf = 0;
-      const onScroll = () => {
-        cancelAnimationFrame(raf);
-        raf = requestAnimationFrame(() => {
-          parallaxEls.forEach((el) => {
-            const speed = parseFloat(el.dataset.parallax || "0.1");
-            const ref = el.parentElement ?? el;
-            const rect = ref.getBoundingClientRect();
-            const offset =
-              (rect.top + rect.height / 2 - window.innerHeight / 2) * -speed;
-            el.style.transform = `translateY(${offset.toFixed(1)}px)`;
-          });
+      const paint = () => {
+        raf = 0;
+        const vh = window.innerHeight;
+        // read all rects, then write, so the browser lays out once per frame
+        const rects = parallaxEls.map((el) => (el.parentElement ?? el).getBoundingClientRect());
+        parallaxEls.forEach((el, i) => {
+          const rect = rects[i];
+          if (rect.bottom < -vh || rect.top > vh * 2) return;
+          const offset = (rect.top + rect.height / 2 - vh / 2) * -speeds[i];
+          el.style.transform = `translateY(${offset.toFixed(1)}px)`;
         });
+      };
+      const onScroll = () => {
+        if (!raf) raf = requestAnimationFrame(paint);
       };
       onScroll();
       window.addEventListener("scroll", onScroll, { passive: true });

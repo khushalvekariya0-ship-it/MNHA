@@ -12,7 +12,8 @@ type TimelineItem = {
 export default function Timeline({ items }: { items: TimelineItem[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
-  const [fill, setFill] = useState(0);
+  const fillRef = useRef<HTMLDivElement>(null);
+  // the line is drawn straight to the DOM; React only re-renders when a milestone lights up
   const [active, setActive] = useState(0);
 
   useEffect(() => {
@@ -25,12 +26,12 @@ export default function Timeline({ items }: { items: TimelineItem[] }) {
       const trigger = window.innerHeight * 0.72;
       const max = Math.max(rect.height - 32, 0);
       const px = Math.min(Math.max(trigger - rect.top, 0), max);
-      setFill(px);
 
       let count = 0;
       itemRefs.current.forEach((li) => {
         if (li && li.offsetTop + 40 <= px) count += 1;
       });
+      if (fillRef.current) fillRef.current.style.height = `${px}px`;
       setActive(count);
     };
     const onScroll = () => {
@@ -56,8 +57,8 @@ export default function Timeline({ items }: { items: TimelineItem[] }) {
 
       {/* glowing progress fill */}
       <div
-        className="absolute left-[19px] top-4 w-0.5 rounded-full bg-gradient-to-b from-primary-bright to-primary shadow-[0_0_16px_rgba(0,208,156,0.9)] transition-[height] duration-200 ease-out lg:left-1/2 lg:-translate-x-1/2"
-        style={{ height: `${fill}px` }}
+        ref={fillRef}
+        className="absolute left-[19px] top-4 h-0 w-0.5 rounded-full bg-gradient-to-b from-primary-bright to-primary shadow-[0_0_16px_rgba(0,208,156,0.9)] transition-[height] duration-200 ease-out lg:left-1/2 lg:-translate-x-1/2"
         aria-hidden="true"
       />
 

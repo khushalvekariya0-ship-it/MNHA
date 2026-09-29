@@ -133,8 +133,9 @@ export default function Steps() {
   const sectionRef = useRef<HTMLElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
-  const [horizontal, setHorizontal] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
+  // -1 while stacked (below lg); React only re-renders when the step changes
+  const [active, setActive] = useState(-1);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
@@ -145,9 +146,9 @@ export default function Steps() {
       const viewport = viewportRef.current;
       const track = trackRef.current;
       if (!section || !viewport || !track) return;
-      setHorizontal(mq.matches);
       if (!mq.matches) {
         track.style.transform = "";
+        setActive(-1);
         return;
       }
       const rect = section.getBoundingClientRect();
@@ -155,7 +156,8 @@ export default function Steps() {
       const p = total > 0 ? Math.min(Math.max(-rect.top / total, 0), 1) : 0;
       const shift = Math.max(track.scrollWidth - viewport.clientWidth, 0);
       track.style.transform = `translate3d(${(-p * shift).toFixed(1)}px, 0, 0)`;
-      setProgress(p);
+      if (barRef.current) barRef.current.style.transform = `scaleX(${Math.max(p, 0.02).toFixed(4)})`;
+      setActive(Math.min(Math.round(p * (steps.length - 1)), steps.length - 1));
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
@@ -171,10 +173,6 @@ export default function Steps() {
       cancelAnimationFrame(raf);
     };
   }, []);
-
-  const active = horizontal
-    ? Math.min(Math.round(progress * (steps.length - 1)), steps.length - 1)
-    : -1;
 
   return (
     <section ref={sectionRef} className="relative lg:h-[300vh]">
@@ -210,8 +208,9 @@ export default function Steps() {
               </div>
               <div className="mt-2 h-1 overflow-hidden rounded-full bg-line">
                 <div
-                  className="h-full rounded-full bg-primary shadow-[0_0_12px_rgba(0,208,156,0.8)]"
-                  style={{ width: `${Math.max(progress, 0.02) * 100}%` }}
+                  ref={barRef}
+                  className="h-full origin-left rounded-full bg-primary shadow-[0_0_12px_rgba(0,208,156,0.8)]"
+                  style={{ transform: "scaleX(0.02)" }}
                 />
               </div>
             </div>

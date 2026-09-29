@@ -49,6 +49,7 @@ export default function ThemeToggle({
       style={style}
       className={`relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-ink/[0.07] text-ink ring-1 ring-ink/10 transition-[background-color,box-shadow,scale] duration-300 hover:bg-ink/[0.12] hover:shadow-[0_0_18px_-4px_rgba(0,208,156,0.6)] active:scale-90 ${className}`}
     >
+      {/* icons follow <html data-theme> in CSS, so they are right before hydration */}
       {/* sun: shown in light mode */}
       <svg
         width="20"
@@ -60,7 +61,7 @@ export default function ThemeToggle({
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden="true"
-        className={`${icon} ${light ? "rotate-0 scale-100 opacity-100" : "rotate-90 scale-50 opacity-0"}`}
+        className={`${icon} rotate-90 scale-50 opacity-0 light:rotate-0 light:scale-100 light:opacity-100`}
       >
         <circle cx="12" cy="12" r="4" />
         <path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4" />
@@ -76,7 +77,7 @@ export default function ThemeToggle({
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden="true"
-        className={`${icon} ${light ? "-rotate-90 scale-50 opacity-0" : "rotate-0 scale-100 opacity-100"}`}
+        className={`${icon} rotate-0 scale-100 opacity-100 light:-rotate-90 light:scale-50 light:opacity-0`}
       >
         <path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z" />
       </svg>

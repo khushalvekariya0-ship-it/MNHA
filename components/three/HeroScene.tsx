@@ -237,7 +237,7 @@ export default function HeroScene({ light = false }: { light?: boolean }) {
       // no WebGL: the hero still works without the scene
       return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setClearColor(0x000000, 0);
     renderer.domElement.style.display = "block";
     mount.appendChild(renderer.domElement);

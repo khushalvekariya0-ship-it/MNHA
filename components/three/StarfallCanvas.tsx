@@ -152,7 +152,7 @@ export default function StarfallCanvas({ bus, light = false }: { bus: StarfallBu
     } catch {
       return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setClearColor(0x000000, 0);
     renderer.domElement.style.display = "block";
     mount.appendChild(renderer.domElement);
@@ -204,7 +204,8 @@ export default function StarfallCanvas({ bus, light = false }: { bus: StarfallBu
       const w = mount.clientWidth;
       const h = mount.clientHeight;
       if (!w || !h) return;
-      renderer.setSize(w, h);
+      // re-setting an unchanged size would reallocate and blank the canvas
+      if (renderer.domElement.clientWidth !== w || renderer.domElement.clientHeight !== h) renderer.setSize(w, h);
       camera.left = 0;
       camera.right = w;
       camera.top = 0;

@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 // rising to the right, with growth bars, travelling light dots and a glossy
 // floor. All geometry is in section pixels: u = 0..1 across, v = 0..1 down.
 
-const SAMPLES = 90;
+const SAMPLES = 64;
 
 const ribbons = [
   { dv: -0.1, th: 0.05, speed: 0.35, phase: 0.0, fill: 0.1, edge: 0.35 },
@@ -89,18 +89,30 @@ function linePath(f: Frame, v: (u: number) => number) {
   return d;
 }
 
+// each sample's centre and thickness is computed once and shared by all three paths
 function ribbonPaths(r: (typeof ribbons)[number], f: Frame, m: Motion) {
-  const thick = (u: number) =>
-    r.th * (0.35 + 0.65 * Math.sin(Math.PI * u)) * (1 + 0.25 * Math.sin(m.t * 0.6 + r.phase + u * 3));
-  const top = (u: number) => waveV(u, r.dv, r.speed, r.phase, m) - thick(u) / 2;
-  const bottom = (u: number) => waveV(u, r.dv, r.speed, r.phase, m) + thick(u) / 2;
-  const edge = linePath(f, top);
-  let back = "";
-  for (let i = SAMPLES; i >= 0; i--) {
+  const xs: string[] = [];
+  const tops: string[] = [];
+  const bottoms: string[] = [];
+  for (let i = 0; i <= SAMPLES; i++) {
     const u = i / SAMPLES;
-    back += `L${f.x(u).toFixed(1)} ${f.y(bottom(u)).toFixed(1)}`;
+    const centre = waveV(u, r.dv, r.speed, r.phase, m);
+    const half =
+      (r.th * (0.35 + 0.65 * Math.sin(Math.PI * u)) * (1 + 0.25 * Math.sin(m.t * 0.6 + r.phase + u * 3))) / 2;
+    xs.push(f.x(u).toFixed(1));
+    tops.push(f.y(centre - half).toFixed(1));
+    bottoms.push(f.y(centre + half).toFixed(1));
   }
-  return { band: `${edge}${back}Z`, edge, under: linePath(f, bottom) };
+  let edge = "";
+  let under = "";
+  let back = "";
+  for (let i = 0; i <= SAMPLES; i++) {
+    const cmd = i ? "L" : "M";
+    edge += `${cmd}${xs[i]} ${tops[i]}`;
+    under += `${cmd}${xs[i]} ${bottoms[i]}`;
+  }
+  for (let i = SAMPLES; i >= 0; i--) back += `L${xs[i]} ${bottoms[i]}`;
+  return { band: `${edge}${back}Z`, edge, under };
 }
 
 export default function WaveBackdrop() {

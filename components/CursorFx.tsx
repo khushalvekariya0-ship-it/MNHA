@@ -26,12 +26,9 @@ export default function CursorFx() {
     let gx = -500;
     let gy = -500;
     let raf = 0;
-
-    const onMove = (e: MouseEvent) => {
-      mx = e.clientX;
-      my = e.clientY;
-      dot.style.left = `${mx}px`;
-      dot.style.top = `${my}px`;
+    // transforms only (no left/top), so moving the cursor never triggers layout
+    const place = (el: HTMLElement, x: number, y: number) => {
+      el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) translate(-50%, -50%)`;
     };
 
     const loop = () => {
@@ -39,10 +36,18 @@ export default function CursorFx() {
       ry += (my - ry) * 0.2;
       gx += (mx - gx) * 0.08;
       gy += (my - gy) * 0.08;
-      ring.style.left = `${rx}px`;
-      ring.style.top = `${ry}px`;
-      glow.style.transform = `translate3d(${gx}px, ${gy}px, 0)`;
-      raf = requestAnimationFrame(loop);
+      place(ring, rx, ry);
+      glow.style.transform = `translate3d(${gx.toFixed(1)}px, ${gy.toFixed(1)}px, 0)`;
+      // rest once everything has caught up with the pointer
+      const settled = Math.abs(mx - rx) < 0.1 && Math.abs(my - ry) < 0.1 && Math.abs(mx - gx) < 0.1 && Math.abs(my - gy) < 0.1;
+      raf = settled ? 0 : requestAnimationFrame(loop);
+    };
+
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX;
+      my = e.clientY;
+      place(dot, mx, my);
+      if (!raf) raf = requestAnimationFrame(loop);
     };
 
     const onOver = (e: MouseEvent) => {
@@ -70,7 +75,6 @@ export default function CursorFx() {
     document.addEventListener("mouseover", onOver, { passive: true });
     window.addEventListener("mousedown", onDown);
     window.addEventListener("mouseup", onUp);
-    raf = requestAnimationFrame(loop);
 
     return () => {
       window.removeEventListener("mousemove", onMove);
@@ -87,13 +91,13 @@ export default function CursorFx() {
       <div
         ref={dotRef}
         className="cursor-dot"
-        style={{ left: -500, top: -500 }}
+        style={{ transform: "translate3d(-500px, -500px, 0)" }}
         aria-hidden="true"
       />
       <div
         ref={ringRef}
         className="cursor-ring"
-        style={{ left: -500, top: -500 }}
+        style={{ transform: "translate3d(-500px, -500px, 0)" }}
         aria-hidden="true"
       >
         <span ref={labelRef} className="cursor-label" />

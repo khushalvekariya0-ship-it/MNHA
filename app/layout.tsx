@@ -35,12 +35,14 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="flex min-h-screen flex-col">
-        {/* safety net: reveal load-gated content even if hydration stalls */}
+      {/* the inline script below may add .loaded before React hydrates */}
+      <body className="flex min-h-screen flex-col" suppressHydrationWarning>
+        {/* the page animates in as the preloader splits open, without waiting
+            for hydration; the timeout is a last-resort safety net */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "setTimeout(function(){document.body.classList.add('loaded')},4000)",
+              "(function(){function l(){document.body.classList.add('loaded')}document.addEventListener('animationstart',function(e){if(e.animationName==='pl-split-up')l()},true);setTimeout(l,4000)})()",
           }}
         />
         <noscript
