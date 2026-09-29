@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { ComingSoon } from "./ComingSoon";
 import { LogoLockup } from "./Logo";
 import ThemeToggle from "./ThemeToggle";
 import { useScrolledPast } from "./useScrolledPast";
@@ -106,14 +107,10 @@ export default function Header() {
             className="nav-item-in"
             style={{ "--nav-delay": "0.52s" } as React.CSSProperties}
           />
-          <Link
-            href="/signup"
-            data-magnetic=""
-            className="nav-item-in btn-primary hidden px-5 py-2.5 text-sm md:inline-flex"
+          <ComingSoon
+            className="nav-item-in hidden px-4 py-2.5 text-sm md:inline-flex"
             style={{ "--nav-delay": "0.6s" } as React.CSSProperties}
-          >
-            Sign Up
-          </Link>
+          />
 
           <button
             type="button"
@@ -162,12 +159,7 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/signup"
-            className="btn-primary mt-2 flex w-full px-4 py-3 text-sm"
-          >
-            Sign Up
-          </Link>
+          <ComingSoon className="mt-2 flex w-full px-4 py-3 text-sm" />
         </nav>
       )}
     </header>

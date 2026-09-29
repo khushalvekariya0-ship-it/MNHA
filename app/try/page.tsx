@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { ComingSoon, LaunchNote } from "@/components/ComingSoon";
 import SipCalculator from "@/components/SipCalculator";
 import SplitWords from "@/components/SplitWords";
 
@@ -122,17 +122,8 @@ export default function TryPage() {
           <h2 className="text-3xl font-bold tracking-[-0.03em] sm:text-4xl">
             <SplitWords text="Like what you see? Make it real." accent={["real"]} />
           </h2>
-          <Link
-            href="/signup"
-            data-magnetic=""
-            className="btn-primary pulse-glow mt-8 px-9 py-4 text-base"
-          >
-            Start Investing
-            <span aria-hidden="true">→</span>
-          </Link>
-          <p className="mt-5 text-sm text-muted">
-            No complicated steps. Get started in minutes.
-          </p>
+          <ComingSoon className="mt-8 px-9 py-4 text-base" />
+          <LaunchNote className="mt-5" />
         </div>
       </div>
     </section>

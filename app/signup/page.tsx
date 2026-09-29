@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import SignupForm from "@/components/SignupForm";
+import Link from "next/link";
+import { LAUNCH_DATE } from "@/components/ComingSoon";
 import SplitWords from "@/components/SplitWords";
 
 export const metadata: Metadata = {
-  title: "Sign Up",
-  description:
-    "Create your free MNHA account in under a minute and start investing in stocks, mutual funds, F&O and IPOs.",
+  title: "Coming Soon",
+  description: `MNHA accounts open on ${LAUNCH_DATE}. Explore the platform now and start investing in stocks, mutual funds, F&O and IPOs the day sign-ups go live.`,
 };
 
 const perks = [
@@ -34,12 +34,12 @@ export default function SignupPage() {
       <div className="mx-auto grid max-w-6xl items-center gap-14 px-4 pb-28 pt-36 sm:px-6 lg:grid-cols-2 lg:px-8 lg:pt-44">
         <div>
           <p className="hero-fade eyebrow" style={{ "--d": "0s" } as React.CSSProperties}>
-            Join MNHA
+            Coming {LAUNCH_DATE}
           </p>
           <h1 className="mt-6 text-4xl font-bold leading-[1.05] tracking-[-0.04em] sm:text-5xl lg:text-6xl">
             <SplitWords
-              text="Your wealth journey starts with one account."
-              accent={["one", "account"]}
+              text="Your MNHA account opens soon."
+              accent={["soon"]}
               trigger="load"
               baseDelay={100}
             />
@@ -72,7 +72,43 @@ export default function SignupPage() {
         </div>
 
         <div data-animate="right">
-          <SignupForm />
+          <div className="card rounded-3xl px-7 py-12 text-center sm:px-10">
+            <span className="btn-soon px-6 py-3 text-base">
+              <span className="soon-dot" aria-hidden="true" />
+              Coming Soon
+              <span className="soon-date">{LAUNCH_DATE}</span>
+            </span>
+            <h2 className="mt-8 text-3xl font-bold tracking-[-0.03em] text-ink">
+              Sign-ups open {LAUNCH_DATE}
+            </h2>
+            <p className="mx-auto mt-4 max-w-sm text-base leading-7">
+              We are putting the final touches on MNHA accounts. Come back on{" "}
+              {LAUNCH_DATE} — opening one takes minutes.
+            </p>
+
+            <div className="hairline my-9" />
+
+            <p className="text-sm text-muted">
+              Want a head start? Run the numbers or say hello.
+            </p>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/try"
+                data-magnetic=""
+                className="btn-primary px-7 py-3.5 text-base"
+              >
+                Try the calculator
+                <span aria-hidden="true">→</span>
+              </Link>
+              <Link
+                href="/contact"
+                data-magnetic=""
+                className="btn-ghost px-7 py-3.5 text-base"
+              >
+                Contact us
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>

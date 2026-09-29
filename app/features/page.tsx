@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { ComingSoon, LaunchNote } from "@/components/ComingSoon";
 import ProductTabs from "@/components/ProductTabs";
 import ProductShowcase from "@/components/ProductShowcase";
 import DashboardMockup from "@/components/DashboardMockup";
@@ -227,14 +227,7 @@ export default function FeaturesPage() {
               className="hero-fade mt-10 flex flex-wrap items-center gap-x-10 gap-y-4"
               style={{ "--d": "0.85s" } as React.CSSProperties}
             >
-              <Link
-                href="/signup"
-                data-magnetic=""
-                className="btn-primary pulse-glow px-10 py-4 text-base"
-              >
-                Get Started
-                <span aria-hidden="true">→</span>
-              </Link>
+              <ComingSoon className="px-8 py-4 text-base" />
               <a
                 href="#explore"
                 className="border-b-2 border-primary pb-1 text-base font-semibold text-ink transition-colors hover:text-primary"
@@ -242,6 +235,10 @@ export default function FeaturesPage() {
                 Explore Features
               </a>
             </div>
+            <LaunchNote
+              className="hero-fade mt-5"
+              style={{ "--d": "1s" } as React.CSSProperties}
+            />
           </div>
 
           <div

@@ -246,6 +246,53 @@ html.lenis body {
     scale: 0.96;
   }
 
+  /* sign-ups have not opened yet — sits where .btn-primary used to, but inert */
+  .btn-soon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: 9999px;
+    border: 1px dashed rgb(0 208 156 / 0.5);
+    background-color: rgb(0 208 156 / 0.08);
+    color: var(--color-ink);
+    font-weight: 600;
+    cursor: default;
+    user-select: none;
+  }
+
+  .soon-dot {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    background: var(--color-primary);
+    box-shadow: 0 0 10px var(--color-primary);
+    animation: soon-pulse 2.2s ease-in-out infinite;
+  }
+
+  .soon-date {
+    border-radius: 9999px;
+    background-color: rgb(0 208 156 / 0.16);
+    padding: 0.1rem 0.55rem;
+    font-size: 0.72em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--color-primary);
+    white-space: nowrap;
+  }
+
+  /* the light palette needs a deeper green to stay readable on its own tint */
+  [data-theme="light"] .btn-soon {
+    border-color: rgb(0 148 111 / 0.55);
+    background-color: rgb(0 179 134 / 0.1);
+  }
+
+  [data-theme="light"] .soon-date {
+    background-color: rgb(0 148 111 / 0.14);
+    color: #046c52;
+  }
+
   .eyebrow {
     display: inline-flex;
     align-items: center;
@@ -785,6 +832,18 @@ button:hover > svg[aria-hidden="true"] {
 
 .pulse-glow {
   animation: pulse-glow 2.6s ease-in-out infinite;
+}
+
+@keyframes soon-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+  50% {
+    opacity: 0.45;
+    scale: 0.8;
+  }
 }
 
 @keyframes icon-pop {
@@ -1541,6 +1600,7 @@ body.loaded .light-sweep.sweep-load::after {
   .shimmer-text,
   .pulse-glow,
   .pulse-ring,
+  .soon-dot,
   .page-transition,
   .animate-shake,
   .animate-pop,

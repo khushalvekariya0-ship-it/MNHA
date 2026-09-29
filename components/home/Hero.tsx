@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ComingSoon, LaunchNote } from "@/components/ComingSoon";
 import HeroSceneLazy from "@/components/three/HeroSceneLazy";
 import SplitWords from "@/components/SplitWords";
 
@@ -71,19 +72,7 @@ export default function Hero() {
           className="hero-fade flex flex-wrap items-center justify-center gap-3"
           style={{ "--d": "0.7s" } as React.CSSProperties}
         >
-          <Link
-            href="/signup"
-            data-magnetic=""
-            className="btn-primary pulse-glow py-2 pl-7 pr-2 text-base"
-          >
-            Start Investing
-            <span
-              className="flex size-10 items-center justify-center rounded-full bg-[#03140e] text-lg text-primary"
-              aria-hidden="true"
-            >
-              →
-            </span>
-          </Link>
+          <ComingSoon className="px-7 py-4 text-base" />
           <Link
             href="/features"
             data-magnetic=""
@@ -92,6 +81,10 @@ export default function Hero() {
             Explore Features
           </Link>
         </div>
+        <LaunchNote
+          className="hero-fade mt-5 text-center"
+          style={{ "--d": "0.85s" } as React.CSSProperties}
+        />
       </div>
 
       {/* scroll cue */}

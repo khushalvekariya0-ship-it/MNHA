@@ -1,7 +1,13 @@
 import Link from "next/link";
+import { LAUNCH_DATE } from "./ComingSoon";
 import { LogoMark } from "./Logo";
 
-const columns = [
+type Column = {
+  title: string;
+  links: { label: string; href?: string }[];
+};
+
+const columns: Column[] = [
   {
     title: "Products",
     links: [
@@ -25,7 +31,7 @@ const columns = [
     links: [
       { label: "Help", href: "/contact" },
       { label: "SIP Calculator", href: "/try" },
-      { label: "Sign Up", href: "/signup" },
+      { label: "Sign Up" },
     ],
   },
 ];
@@ -124,16 +130,23 @@ export default function Footer() {
               <ul className="mt-5 space-y-3">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="group inline-flex items-center gap-2 text-sm transition-colors duration-300 hover:text-primary"
-                    >
-                      <span
-                        className="h-px w-0 bg-primary transition-all duration-300 group-hover:w-3"
-                        aria-hidden="true"
-                      />
-                      {link.label}
-                    </Link>
+                    {link.href ? (
+                      <Link
+                        href={link.href}
+                        className="group inline-flex items-center gap-2 text-sm transition-colors duration-300 hover:text-primary"
+                      >
+                        <span
+                          className="h-px w-0 bg-primary transition-all duration-300 group-hover:w-3"
+                          aria-hidden="true"
+                        />
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <span className="inline-flex items-center gap-2 text-sm text-muted">
+                        {link.label}
+                        <span className="soon-date">{LAUNCH_DATE}</span>
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

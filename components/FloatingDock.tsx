@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { ComingSoon, LAUNCH_DATE } from "./ComingSoon";
 import { LogoLockup } from "./Logo";
 import ThemeToggle from "./ThemeToggle";
 import { lockScroll, scrollToTop } from "./SmoothScroll";
@@ -236,11 +237,10 @@ export default function FloatingDock() {
             </span>
             <ThemeToggle />
           </div>
-          <Link href="/signup" onClick={() => setOpen(false)} className="btn-primary flex w-full px-6 py-3.5 text-base">
-            Sign Up
-            <span aria-hidden="true">→</span>
-          </Link>
-          <p className="text-center text-xs text-muted">support@mnha.in</p>
+          <ComingSoon className="flex w-full px-6 py-3.5 text-base" />
+          <p className="text-center text-xs text-muted">
+            Sign-ups open {LAUNCH_DATE} · support@mnha.in
+          </p>
         </div>
       </aside>
     </>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ComingSoon, LAUNCH_DATE } from "@/components/ComingSoon";
 import SplitWords from "@/components/SplitWords";
 import WaveBackdrop from "@/components/WaveBackdrop";
 import ParticleOrbLazy from "@/components/three/ParticleOrbLazy";
@@ -83,14 +84,7 @@ export default function CTA({
           {subtitle}
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            href="/signup"
-            data-magnetic=""
-            className="btn-primary px-8 py-4 text-base"
-          >
-            Start Investing
-            <span aria-hidden="true">→</span>
-          </Link>
+          <ComingSoon className="px-8 py-4 text-base" />
           <Link
             href="/features"
             data-magnetic=""
@@ -100,7 +94,7 @@ export default function CTA({
           </Link>
         </div>
         <p className={`mt-6 text-sm ${waves ? "text-ink/70" : "text-muted"}`}>
-          No complicated steps. Get started in minutes.
+          Sign-ups open {LAUNCH_DATE} — no complicated steps, it takes minutes.
         </p>
       </div>
     </section>

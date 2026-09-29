@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ComingSoon, LaunchNote } from "@/components/ComingSoon";
 import CTA from "@/components/home/CTA";
 import Timeline from "@/components/Timeline";
 import ProductShowcase from "@/components/ProductShowcase";
@@ -164,14 +165,7 @@ export default function InfoPage() {
               className="hero-fade mt-10 flex flex-wrap items-center justify-center gap-3"
               style={{ "--d": "0.65s" } as React.CSSProperties}
             >
-              <Link
-                href="/signup"
-                data-magnetic=""
-                className="btn-primary pulse-glow px-8 py-4 text-base"
-              >
-                Start Investing
-                <span aria-hidden="true">→</span>
-              </Link>
+              <ComingSoon className="px-8 py-4 text-base" />
               <Link
                 href="/try"
                 data-magnetic=""
@@ -180,6 +174,10 @@ export default function InfoPage() {
                 Explore MNHA
               </Link>
             </div>
+            <LaunchNote
+              className="hero-fade mt-5"
+              style={{ "--d": "0.8s" } as React.CSSProperties}
+            />
           </div>
 
           {/* globe stage */}
